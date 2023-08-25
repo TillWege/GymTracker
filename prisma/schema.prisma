@@ -7,12 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Example {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model Account {
   id                       String  @id @default(cuid())
   userId                   String
@@ -48,6 +42,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  Workout       Workout[]
 }
 
 model VerificationToken {
@@ -56,4 +51,30 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Workout {
+  id        String     @id @default(cuid())
+  exercises Exercise[]
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  timestamp DateTime
+}
+
+model Exercise {
+  id             String       @id @default(cuid())
+  workout        Workout      @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  workoutId      String
+  name           String
+  sets           Int
+  reps           Int
+  weight         Int
+  type           ExerciseType @relation(fields: [exerciseTypeId], references: [id])
+  exerciseTypeId String
+}
+
+model ExerciseType {
+  id       String     @id @default(cuid())
+  name     String
+  Exercise Exercise[]
 }
