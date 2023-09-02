@@ -35,14 +35,14 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  Workout       Workout[]
+  id             String           @id @default(cuid())
+  name           String?
+  email          String?          @unique
+  emailVerified  DateTime?
+  image          String?
+  accounts       Account[]
+  sessions       Session[]
+  workoutSession WorkoutSession[]
 }
 
 model VerificationToken {
@@ -53,28 +53,33 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Workout {
-  id        String     @id @default(cuid())
-  exercises Exercise[]
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+model WorkoutSession {
+  id        String    @id @default(cuid())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   timestamp DateTime
+  Workout   Workout[]
+}
+
+model Workout {
+  id         String         @id @default(cuid())
+  workout    WorkoutSession @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  workoutId  String
+  exercise   Exercise       @relation(fields: [exerciseId], references: [id])
+  exerciseId String
+  sets       Set[]
+}
+
+model Set {
+  id        String  @id @default(cuid())
+  workout   Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  workoutId String
+  reps      Int
+  weight    Int
 }
 
 model Exercise {
-  id             String       @id @default(cuid())
-  workout        Workout      @relation(fields: [workoutId], references: [id], onDelete: Cascade)
-  workoutId      String
-  name           String
-  sets           Int
-  reps           Int
-  weight         Int
-  type           ExerciseType @relation(fields: [exerciseTypeId], references: [id])
-  exerciseTypeId String
-}
-
-model ExerciseType {
-  id       String     @id @default(cuid())
-  name     String
-  Exercise Exercise[]
+  id      String    @id @default(cuid())
+  name    String
+  Workout Workout[]
 }
