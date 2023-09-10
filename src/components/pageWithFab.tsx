@@ -3,10 +3,14 @@ import { Box, Button } from "@mantine/core";
 interface PageWithFabProps {
   children: React.ReactNode;
   onFabClick: () => void;
-  fabText?: string;
+  fabLabel: string;
 }
 
-export function PageWithFab({ children, onFabClick }: PageWithFabProps) {
+export function PageWithFab({
+  children,
+  onFabClick,
+  fabLabel,
+}: PageWithFabProps) {
   return (
     <Box w={"100%"} h={"100%"}>
       <Button
@@ -17,9 +21,8 @@ export function PageWithFab({ children, onFabClick }: PageWithFabProps) {
           right: "2rem",
         }}
       >
-        Add Exercise
+        {fabLabel}
       </Button>
-      reee
       {children}
     </Box>
   );

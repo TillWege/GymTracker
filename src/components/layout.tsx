@@ -33,7 +33,7 @@ export function Layout({ children }: LayoutProps) {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [expanded, { toggle }] = useDisclosure(!isMobile);
   const [selectedTab, setSelectedTab] = useState(
-    router.pathname.split("/")[1] || "workout"
+    router.pathname.split("/")[1] || "session"
   );
   const sessionData = useSession();
 
@@ -121,6 +121,9 @@ export function Layout({ children }: LayoutProps) {
                 flex: "auto",
               }
         }
+        sx={(theme) => ({
+          borderRight: isMobile ? "" : `1px solid ${theme.colors.dark[4]}`,
+        })}
         orientation={isMobile ? "horizontal" : "vertical"}
         onTabChange={(value) => {
           if (value == "collapse" || value == "login" || value == "logout") {
