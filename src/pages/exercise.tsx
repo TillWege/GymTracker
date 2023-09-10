@@ -6,7 +6,7 @@ export default function Exercise() {
   const [opened, { open, close }] = useDisclosure(false);
 
   return (
-    <PageWithFab onFabClick={open}>
+    <PageWithFab onFabClick={open} fabLabel={""}>
       <Modal opened={opened} onClose={close} title="Authentication">
         <Text>Modal Content</Text>
       </Modal>

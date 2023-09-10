@@ -1,6 +1,5 @@
-import { Button, Flex, Title } from "@mantine/core";
+import { Flex, Title } from "@mantine/core";
 import Image from "next/image";
-import { signIn, signOut, useSession } from "next-auth/react";
 import { useMediaQuery } from "@mantine/hooks";
 
 export function Header() {
