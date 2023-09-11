@@ -56,11 +56,12 @@ model VerificationToken {
 }
 
 model WorkoutSession {
-  id        String    @id @default(cuid())
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  timestamp DateTime
-  Workout   Workout[]
+  id             String    @id @default(cuid())
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String
+  startTimestamp DateTime
+  endTimestamp   DateTime?
+  Workout        Workout[]
 }
 
 model Workout {

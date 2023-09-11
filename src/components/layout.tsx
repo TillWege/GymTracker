@@ -107,8 +107,8 @@ export function Layout({ children }: LayoutProps) {
       <Tabs
         value={selectedTab}
         variant="outline"
-        defaultValue="workout"
-        maw={1200}
+        defaultValue="session"
+        maw={800}
         w={"95%"}
         style={
           isMobile
@@ -153,6 +153,7 @@ export function Layout({ children }: LayoutProps) {
         </Tabs.List>
         <ScrollArea
           ml={isMobile ? undefined : "1rem"}
+          pr={isMobile ? undefined : "1rem"}
           h={isMobile ? "85vh" : "94vh"}
           w={"100%"}
         >

@@ -10,7 +10,7 @@ export default function Exercise() {
       <Modal opened={opened} onClose={close} title="Authentication">
         <Text>Modal Content</Text>
       </Modal>
-      <Text>Reee</Text>
+      <Text>Exercise</Text>
     </PageWithFab>
   );
 }

@@ -1,4 +1,5 @@
 import { Box, Button } from "@mantine/core";
+import { useSession } from "next-auth/react";
 
 interface PageWithFabProps {
   children: React.ReactNode;
@@ -11,18 +12,23 @@ export function PageWithFab({
   onFabClick,
   fabLabel,
 }: PageWithFabProps) {
+  const { data } = useSession();
+
   return (
-    <Box w={"100%"} h={"100%"}>
-      <Button
-        onClick={onFabClick}
-        style={{
-          position: "absolute",
-          bottom: "2rem",
-          right: "2rem",
-        }}
-      >
-        {fabLabel}
-      </Button>
+    <Box w={"100%"} h={"100%"} pt={"1rem"}>
+      {data?.user && (
+        <Button
+          onClick={onFabClick}
+          style={{
+            zIndex: 2,
+            position: "absolute",
+            bottom: "2rem",
+            right: "2rem",
+          }}
+        >
+          {fabLabel}
+        </Button>
+      )}
       {children}
     </Box>
   );
