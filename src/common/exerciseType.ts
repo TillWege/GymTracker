@@ -1,4 +1,4 @@
-import { ExerciseType } from "@prisma/client";
+import { ExerciseType, MuscleCategory } from "@prisma/client";
 
 const values = Object.values(ExerciseType);
 
@@ -20,10 +20,16 @@ export function GetExerciseTypeSelection(): {
   label: string;
 }[] {
   return [
-    { value: "", label: "All" },
+    { value: "", label: "Select type... " },
     ...values.map((value) => ({
       value,
       label: GetExerciseTypeDisplayString(value),
     })),
   ];
+}
+
+export function IsExerciseType(
+  exerciseType: string
+): exerciseType is ExerciseType {
+  return values.includes(exerciseType as ExerciseType);
 }

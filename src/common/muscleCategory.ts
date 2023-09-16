@@ -1,4 +1,4 @@
-import { MuscleCategory } from "@prisma/client";
+import { MuscleCategory, MuscleGroup } from "@prisma/client";
 
 const values = Object.values(MuscleCategory);
 
@@ -28,10 +28,14 @@ export function GetMuscleCategorySelection(): {
   label: string;
 }[] {
   return [
-    { value: "", label: "All" },
+    { value: "", label: "Select category..." },
     ...values.map((value) => ({
       value,
       label: GetMuscleCategoryDisplayString(value),
     })),
   ];
+}
+
+export function IsMuscleCategory(category: string): category is MuscleCategory {
+  return values.includes(category as MuscleCategory);
 }

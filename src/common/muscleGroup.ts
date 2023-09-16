@@ -43,10 +43,14 @@ export function GetMuscleGroupSelection(): {
   label: string;
 }[] {
   return [
-    { value: "", label: "All" },
+    { value: "", label: "" },
     ...values.map((value) => ({
       value,
       label: GetMuscleGroupDisplayString(value),
     })),
   ];
+}
+
+export function IsMuscleGroup(group: string): group is MuscleGroup {
+  return values.includes(group as MuscleGroup);
 }

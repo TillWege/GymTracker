@@ -64,7 +64,6 @@ function SessionCard(props: WorkoutSession) {
 
   return (
     <Card
-      key={props.id}
       shadow="sm"
       radius="md"
       withBorder
