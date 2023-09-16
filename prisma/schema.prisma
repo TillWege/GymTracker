@@ -5,8 +5,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL_PG")
-  // provider = "sqlite"
-  // url      = env("DATABASE_URL_SQLITE")
 }
 
 model Account {
@@ -64,13 +62,43 @@ model WorkoutSession {
   workout        Workout[]
 }
 
-model Workout {
-  id         String         @id @default(cuid())
-  workout    WorkoutSession @relation(fields: [workoutId], references: [id], onDelete: Cascade)
-  workoutId  String
-  exercise   Exercise       @relation(fields: [exerciseId], references: [id])
-  exerciseId String
-  sets       Set[]
+enum ExerciseType {
+  MACHINE
+  FREE_WEIGHT
+}
+
+enum MuscleCategory {
+  CHEST
+  BACK
+  SHOULDERS
+  ARMS
+  LEGS
+  ABS
+}
+
+enum MuscleGroup {
+  CHEST_UPPER
+  CHEST_LOWER
+  BACK_UPPER
+  BACK_LOWER
+  SHOULDERS_FRONT
+  SHOULDERS_BACK
+  BICEPS
+  TRICEPS
+  QUADS
+  HAMSTRINGS
+  CALVES
+  ABS_UPPER
+  ABS_LOWER
+}
+
+model Exercise {
+  id             String         @id @default(cuid())
+  name           String
+  muscleGategory MuscleCategory
+  muscleGroup    MuscleGroup?
+  exerciseType   ExerciseType
+  workouts       Workout[]
 }
 
 model Set {
@@ -81,10 +109,11 @@ model Set {
   weight    Int
 }
 
-model Exercise {
-  id                String    @id @default(cuid())
-  name              String
-  workout           Workout[]
-  muscleGroup       Int
-  isMachineExercise Boolean
+model Workout {
+  id         String         @id @default(cuid())
+  workout    WorkoutSession @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  workoutId  String
+  exercise   Exercise       @relation(fields: [exerciseId], references: [id])
+  exerciseId String
+  sets       Set[]
 }
