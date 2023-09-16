@@ -61,7 +61,7 @@ model WorkoutSession {
   userId         String
   startTimestamp DateTime
   endTimestamp   DateTime?
-  Workout        Workout[]
+  workout        Workout[]
 }
 
 model Workout {
@@ -82,7 +82,9 @@ model Set {
 }
 
 model Exercise {
-  id      String    @id @default(cuid())
-  name    String
-  Workout Workout[]
+  id                String    @id @default(cuid())
+  name              String
+  workout           Workout[]
+  muscleGroup       Int
+  isMachineExercise Boolean
 }
