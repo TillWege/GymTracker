@@ -9,6 +9,19 @@ export const sessionRouter = createTRPCRouter({
   getSessions: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.workoutSession.findMany();
   }),
+  getSessionsByUser: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.workoutSession.findMany({
+      where: {
+        user: {
+          id: ctx.session.user.id,
+        },
+      },
+      orderBy: {
+        startTimestamp: "desc",
+      },
+      take: 10,
+    });
+  }),
 
   startSession: protectedProcedure.mutation(async ({ ctx }) => {
     return await ctx.prisma.workoutSession.create({
@@ -37,4 +50,17 @@ export const sessionRouter = createTRPCRouter({
         },
       });
     }),
+  getLatestSession: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.workoutSession.findFirst({
+      where: {
+        user: {
+          id: ctx.session.user.id,
+        },
+      },
+      orderBy: {
+        startTimestamp: "desc",
+      },
+      take: 1,
+    });
+  }),
 });

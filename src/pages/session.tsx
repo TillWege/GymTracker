@@ -12,7 +12,7 @@ export default function Session() {
   return (
     <PageWithFab
       onFabClick={open}
-      fabLabel={"Start Session"}
+      fabCaption={"Start Session"}
       pageTitle={"Session List"}
     >
       <AddSessionModal opened={opened} close={close} />

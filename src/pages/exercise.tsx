@@ -67,7 +67,7 @@ export default function Exercise() {
   return (
     <PageWithFab
       onFabClick={open}
-      fabLabel={"Add Exercise"}
+      fabCaption={"Add Exercise"}
       pageTitle={"Exercise List"}
       titleChildren={
         <ExerciseFilterButton

@@ -2,17 +2,17 @@ import { Box, Button, Divider, Group, Text } from "@mantine/core";
 import { useSession } from "next-auth/react";
 
 interface PageWithFabProps {
-  children: React.ReactNode;
-  onFabClick: () => void;
-  fabLabel: string;
   pageTitle: string;
   titleChildren?: React.ReactNode;
+  onFabClick: () => void;
+  fabCaption: string;
+  children: React.ReactNode;
 }
 
 export function PageWithFab({
   children,
   onFabClick,
-  fabLabel,
+  fabCaption,
   pageTitle,
   titleChildren,
 }: PageWithFabProps) {
@@ -37,7 +37,7 @@ export function PageWithFab({
             right: "2rem",
           }}
         >
-          {fabLabel}
+          {fabCaption}
         </Button>
       )}
       {children}
