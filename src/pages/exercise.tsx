@@ -43,6 +43,7 @@ import {
 import { api, type RouterOutputs } from "~/utils/api";
 import { type Exercise } from ".prisma/client";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 
 type ExerciseRecord = RouterOutputs["exercise"]["getExercises"][number];
 
@@ -97,10 +98,11 @@ function ExerciseCard(props: ExerciseRecord) {
 
   const totalCount = (
     <Box style={{ marginLeft: "auto", marginRight: 0 }}>
-      Total Sessions: {props._count.workouts}
+      Total Workouts: {props._count.workouts}
     </Box>
   );
   const deleteMut = api.exercise.deleteExercise.useMutation();
+  const session = useSession();
 
   const deleteFunc = async () => {
     await deleteMut.mutateAsync(props.id);
@@ -162,24 +164,29 @@ function ExerciseCard(props: ExerciseRecord) {
             <Button variant="light" color="green" mt="md" radius="md">
               Start
             </Button>
-            <Button
-              variant="light"
-              color="blue"
-              mt="md"
-              radius="md"
-              onClick={open}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="light"
-              color="red"
-              mt="md"
-              radius="md"
-              onClick={() => void deleteFunc()}
-            >
-              Delete Exercise
-            </Button>
+
+            {session?.data?.user.id == props.creatorId && (
+              <>
+                <Button
+                  variant="light"
+                  color="blue"
+                  mt="md"
+                  radius="md"
+                  onClick={open}
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="light"
+                  color="red"
+                  mt="md"
+                  radius="md"
+                  onClick={() => void deleteFunc()}
+                >
+                  Delete Exercise
+                </Button>
+              </>
+            )}
           </Group>
           {isMobile || totalCount}
         </Flex>
