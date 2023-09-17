@@ -133,12 +133,6 @@ export function Layout({ children }: LayoutProps) {
           setSelectedTab(value as string);
         }}
       >
-        {isMobile && (
-          <Title order={4} align={"center"}>
-            {selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)}
-          </Title>
-        )}
-
         <Tabs.List mt={"md"}>
           {data.map((tab) => (
             <Tab

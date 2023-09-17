@@ -12,33 +12,67 @@ import {
   TextInput,
 } from "@mantine/core";
 import { PageWithFab } from "~/components/pageWithFab";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
-import { ExerciseType, MuscleCategory, type MuscleGroup } from "@prisma/client";
 import {
+  type ExerciseType,
+  type MuscleCategory,
+  type MuscleGroup,
+} from "@prisma/client";
+import {
+  GetExerciseTypeColor,
   GetExerciseTypeDisplayString,
   GetExerciseTypeSelection,
+  GetExerciseTypeValues,
   IsExerciseType,
 } from "~/common/exerciseType";
 import {
+  GetMuscleCategoryColor,
   GetMuscleCategoryDisplayString,
   GetMuscleCategorySelection,
+  GetMuscleCategoryValues,
   IsMuscleCategory,
 } from "~/common/muscleCategory";
 import {
+  GetMuscleGroupColor,
   GetMuscleGroupDisplayString,
   GetMuscleGroupSelection,
+  GetMuscleGroupValues,
   IsMuscleGroup,
 } from "~/common/muscleGroup";
 import { api } from "~/utils/api";
-import { Exercise } from ".prisma/client";
+import { type Exercise } from ".prisma/client";
+import { useState } from "react";
 
 export default function Exercise() {
   const [opened, { open, close }] = useDisclosure(false);
   const { data } = api.exercise.getExercises.useQuery();
+  const [exerciseTypeFilters, setExerciseTypeFilters] = useState<
+    ExerciseType[]
+  >([]);
+  const [muscleCategoryFilters, setMuscleCategoryFilters] = useState<
+    MuscleCategory[]
+  >([]);
+  const [muscleGroupFilters, setMuscleGroupFilters] = useState<MuscleGroup[]>(
+    []
+  );
 
   return (
-    <PageWithFab onFabClick={open} fabLabel={"Add Exercise"}>
+    <PageWithFab
+      onFabClick={open}
+      fabLabel={"Add Exercise"}
+      pageTitle={"Exercise List"}
+      titleChildren={
+        <ExerciseFilterButton
+          exerciseTypeFilters={exerciseTypeFilters}
+          muscleCategoryFilters={muscleCategoryFilters}
+          muscleGroupFilters={muscleGroupFilters}
+          setExerciseTypeFilters={setExerciseTypeFilters}
+          setMuscleCategoryFilters={setMuscleCategoryFilters}
+          setMuscleGroupFilters={setMuscleGroupFilters}
+        />
+      }
+    >
       {data?.map((exercise) => (
         <ExerciseCard key={exercise.id} {...exercise}></ExerciseCard>
       ))}
@@ -48,6 +82,19 @@ export default function Exercise() {
 }
 
 function ExerciseCard(props: Exercise) {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  const totalCount = (
+    <Box style={{ marginLeft: "auto", marginRight: 0 }}>
+      Total Sessions: {0 /* TODO */}
+    </Box>
+  );
+  const deleteMut = api.exercise.deleteExercise.useMutation();
+
+  const deleteFunc = async () => {
+    await deleteMut.mutateAsync(props.id);
+  };
+
   return (
     <Card
       shadow="sm"
@@ -61,30 +108,40 @@ function ExerciseCard(props: Exercise) {
       }}
     >
       <Flex direction={"column"} h={"100%"} justify={"space-between"}>
-        <Group position={"apart"}>
+        <Group position={"apart"} align={"start"}>
           <Flex direction={"column"}>
-            <Text>Exercise Name: {props.name}</Text>
-            <Text style={{ marginLeft: "auto", marginRight: 0 }}>
-              Exercise Type:{" "}
-              <Badge>{GetExerciseTypeDisplayString(props.exerciseType)}</Badge>
+            <Text>
+              {isMobile || "Exercise Name:"} {props.name}
+            </Text>
+            <Text>
+              {isMobile || "Exercise Type:"}{" "}
+              <Badge color={GetExerciseTypeColor(props.exerciseType)}>
+                {GetExerciseTypeDisplayString(props.exerciseType)}
+              </Badge>
             </Text>
           </Flex>
           <Flex direction={"column"}>
             <Text style={{ marginLeft: "auto", marginRight: 0 }}>
-              Category:
-              <Badge>
+              {isMobile || "Category:"}
+              <Badge color={GetMuscleCategoryColor(props.muscleCategory)}>
                 {GetMuscleCategoryDisplayString(props.muscleCategory)}
               </Badge>
             </Text>
-            {/*TODO fix this on mobile*/}
             <Text style={{ marginLeft: "auto", marginRight: 0 }}>
-              Muscle Group:{" "}
-              <Badge>
+              {isMobile || "Muscle Group:"}
+              <Badge
+                color={
+                  props.muscleGroup
+                    ? GetMuscleGroupColor(props.muscleGroup)
+                    : "gray"
+                }
+              >
                 {props.muscleGroup
                   ? GetMuscleGroupDisplayString(props.muscleGroup)
                   : "unknown"}
               </Badge>
             </Text>
+            {isMobile && totalCount}
           </Flex>
         </Group>
 
@@ -96,11 +153,17 @@ function ExerciseCard(props: Exercise) {
             <Button variant="light" color="blue" mt="md" radius="md">
               Edit
             </Button>
-            <Button variant="light" color="red" mt="md" radius="md">
+            <Button
+              variant="light"
+              color="red"
+              mt="md"
+              radius="md"
+              onClick={() => void deleteFunc()}
+            >
               Delete Exercise
             </Button>
           </Group>
-          <Box>Total Sessions: {0 /* TODO */}</Box>
+          {isMobile || totalCount}
         </Flex>
       </Flex>
     </Card>
@@ -187,5 +250,151 @@ function AddExerciseModal({ opened, onClose: close }: AddExerciseModalProps) {
         </Group>
       </form>
     </Modal>
+  );
+}
+
+interface ExerciseFilterButtonProps {
+  exerciseTypeFilters: ExerciseType[];
+  muscleCategoryFilters: MuscleCategory[];
+  muscleGroupFilters: MuscleGroup[];
+  setExerciseTypeFilters: (filters: ExerciseType[]) => void;
+  setMuscleCategoryFilters: (filters: MuscleCategory[]) => void;
+  setMuscleGroupFilters: (filters: MuscleGroup[]) => void;
+}
+
+function ExerciseFilterButton({
+  exerciseTypeFilters,
+  muscleCategoryFilters,
+  muscleGroupFilters,
+  setExerciseTypeFilters,
+  setMuscleCategoryFilters,
+  setMuscleGroupFilters,
+}: ExerciseFilterButtonProps) {
+  const [filterOpen, { toggle, close: closeFilter }] = useDisclosure(false);
+
+  const [tempExerciseTypeFilters, setTempExerciseTypeFilters] = useState<
+    ExerciseType[]
+  >([]);
+  const [tempMuscleCategoryFilters, setTempMuscleCategoryFilters] = useState<
+    MuscleCategory[]
+  >([]);
+  const [tempMuscleGroupFilters, setTempMuscleGroupFilters] = useState<
+    MuscleGroup[]
+  >([]);
+
+  const showFilters = () => {
+    setTempExerciseTypeFilters(exerciseTypeFilters);
+    setTempMuscleCategoryFilters(muscleCategoryFilters);
+    setTempMuscleGroupFilters(muscleGroupFilters);
+    toggle();
+  };
+
+  const resetFilters = () => {
+    setTempExerciseTypeFilters([]);
+    setTempMuscleCategoryFilters([]);
+    setTempMuscleGroupFilters([]);
+  };
+
+  const applyFilters = () => {
+    setExerciseTypeFilters(tempExerciseTypeFilters);
+    setMuscleCategoryFilters(tempMuscleCategoryFilters);
+    setMuscleGroupFilters(tempMuscleGroupFilters);
+    closeFilter();
+  };
+
+  return (
+    <>
+      <Button onClick={showFilters}>Configure Filters</Button>
+      <Modal
+        opened={filterOpen}
+        onClose={() => {}}
+        title={"Configure Filters"}
+        withCloseButton={false}
+      >
+        <Text>Exercise Type</Text>
+        {GetExerciseTypeValues().map((type, index) => (
+          <Badge
+            key={`type-${index}`}
+            style={{ cursor: "pointer", userSelect: "none" }}
+            color={
+              tempExerciseTypeFilters.includes(type)
+                ? GetExerciseTypeColor(type)
+                : "gray"
+            }
+            onClick={() => {
+              if (tempExerciseTypeFilters.includes(type)) {
+                setTempExerciseTypeFilters(
+                  tempExerciseTypeFilters.filter((x) => x != type)
+                );
+              } else {
+                setTempExerciseTypeFilters([...tempExerciseTypeFilters, type]);
+              }
+            }}
+          >
+            {GetExerciseTypeDisplayString(type)}
+          </Badge>
+        ))}
+        <Divider mt={"sm"} mb={"sm"} />
+        <Text>Muscle Category</Text>
+        {GetMuscleCategoryValues().map((category, index) => (
+          <Badge
+            key={`category-${index}`}
+            style={{ cursor: "pointer", userSelect: "none" }}
+            color={
+              tempMuscleCategoryFilters.includes(category)
+                ? GetMuscleCategoryColor(category)
+                : "gray"
+            }
+            onClick={() => {
+              if (tempMuscleCategoryFilters.includes(category)) {
+                setTempMuscleCategoryFilters(
+                  tempMuscleCategoryFilters.filter((x) => x != category)
+                );
+              } else {
+                setTempMuscleCategoryFilters([
+                  ...tempMuscleCategoryFilters,
+                  category,
+                ]);
+              }
+            }}
+          >
+            {GetMuscleCategoryDisplayString(category)}
+          </Badge>
+        ))}
+        <Divider mt={"sm"} mb={"sm"} />
+        <Text>Muscle Group</Text>
+        {GetMuscleGroupValues().map((group, index) => (
+          <Badge
+            style={{ cursor: "pointer", userSelect: "none" }}
+            key={`group-${index}`}
+            color={
+              tempMuscleGroupFilters.includes(group)
+                ? GetMuscleGroupColor(group)
+                : "gray"
+            }
+            onClick={() => {
+              if (tempMuscleGroupFilters.includes(group)) {
+                setTempMuscleGroupFilters(
+                  tempMuscleGroupFilters.filter((x) => x != group)
+                );
+              } else {
+                setTempMuscleGroupFilters([...tempMuscleGroupFilters, group]);
+              }
+            }}
+          >
+            {GetMuscleGroupDisplayString(group)}
+          </Badge>
+        ))}
+        <Divider mt={"sm"} mb={"sm"} />
+        <Group position={"center"}>
+          <Button onClick={resetFilters} type={"reset"} color={"red"}>
+            Clear Filters
+          </Button>
+          <Button type={"submit"} onClick={applyFilters}>
+            Apply Filters
+          </Button>
+        </Group>
+      </Modal>
+    </>
   );
 }

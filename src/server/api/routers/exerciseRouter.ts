@@ -7,9 +7,31 @@ import { z } from "zod";
 import { ExerciseType, MuscleCategory, MuscleGroup } from "@prisma/client";
 
 export const exerciseRouter = createTRPCRouter({
-  getExercises: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.exercise.findMany();
-  }),
+  getExercises: publicProcedure
+    .input(
+      z.optional(
+        z.object({
+          muscleCategoryFilter: z.array(z.nativeEnum(MuscleCategory)),
+          muscleGroupFilter: z.array(z.nativeEnum(MuscleGroup)),
+          exerciseTypeFilter: z.array(z.nativeEnum(ExerciseType)),
+        })
+      )
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.exercise.findMany({
+        where: {
+          exerciseType: {
+            in: input?.exerciseTypeFilter,
+          },
+          muscleCategory: {
+            in: input?.muscleCategoryFilter,
+          },
+          muscleGroup: {
+            in: input?.muscleGroupFilter,
+          },
+        },
+      });
+    }),
   addExercise: protectedProcedure
     .input(
       z.object({

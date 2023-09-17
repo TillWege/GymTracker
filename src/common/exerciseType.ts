@@ -1,11 +1,12 @@
 import { ExerciseType, MuscleCategory } from "@prisma/client";
+import { MantineColor } from "@mantine/core";
 
 const values = Object.values(ExerciseType);
 
 export function GetExerciseTypeDisplayString(type: ExerciseType): string {
   switch (type) {
     case ExerciseType.FREE_WEIGHT:
-      return "Cardio";
+      return "Free Weight";
     case ExerciseType.MACHINE:
       return "Machine";
   }
@@ -26,6 +27,15 @@ export function GetExerciseTypeSelection(): {
       label: GetExerciseTypeDisplayString(value),
     })),
   ];
+}
+
+export function GetExerciseTypeColor(type: ExerciseType): MantineColor {
+  switch (type) {
+    case ExerciseType.FREE_WEIGHT:
+      return "blue";
+    case ExerciseType.MACHINE:
+      return "red";
+  }
 }
 
 export function IsExerciseType(

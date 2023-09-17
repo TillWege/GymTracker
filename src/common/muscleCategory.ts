@@ -1,4 +1,5 @@
 import { MuscleCategory, MuscleGroup } from "@prisma/client";
+import { MantineColor } from "@mantine/core";
 
 const values = Object.values(MuscleCategory);
 
@@ -34,6 +35,23 @@ export function GetMuscleCategorySelection(): {
       label: GetMuscleCategoryDisplayString(value),
     })),
   ];
+}
+
+export function GetMuscleCategoryColor(type: MuscleCategory): MantineColor {
+  switch (type) {
+    case MuscleCategory.ABS:
+      return "blue";
+    case MuscleCategory.BACK:
+      return "green";
+    case MuscleCategory.CHEST:
+      return "red";
+    case MuscleCategory.ARMS:
+      return "purple";
+    case MuscleCategory.LEGS:
+      return "yellow";
+    case MuscleCategory.SHOULDERS:
+      return "lime";
+  }
 }
 
 export function IsMuscleCategory(category: string): category is MuscleCategory {

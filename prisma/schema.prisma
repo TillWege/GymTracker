@@ -66,6 +66,7 @@ model WorkoutSession {
 enum ExerciseType {
   MACHINE
   FREE_WEIGHT
+  CARDIO
 }
 
 enum MuscleCategory {

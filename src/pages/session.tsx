@@ -2,7 +2,7 @@ import { Badge, Button, Card, Group, Modal, Text, Box } from "@mantine/core";
 import { PageWithFab } from "~/components/pageWithFab";
 import { useDisclosure } from "@mantine/hooks";
 import { api } from "~/utils/api";
-import { WorkoutSession } from ".prisma/client";
+import { type WorkoutSession } from ".prisma/client";
 import { useSession } from "next-auth/react";
 
 export default function Session() {
@@ -10,7 +10,11 @@ export default function Session() {
   const { data } = api.session.getSessions.useQuery();
 
   return (
-    <PageWithFab onFabClick={open} fabLabel={"Start Session"}>
+    <PageWithFab
+      onFabClick={open}
+      fabLabel={"Start Session"}
+      pageTitle={"Session List"}
+    >
       <AddSessionModal opened={opened} close={close} />
       {data?.map((session) => {
         return <SessionCard key={session.id} {...session}></SessionCard>;
