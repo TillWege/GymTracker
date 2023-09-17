@@ -40,13 +40,14 @@ import {
   GetMuscleGroupValues,
   IsMuscleGroup,
 } from "~/common/muscleGroup";
-import { api } from "~/utils/api";
+import { api, type RouterOutputs } from "~/utils/api";
 import { type Exercise } from ".prisma/client";
 import { useState } from "react";
 
+type ExerciseRecord = RouterOutputs["exercise"]["getExercises"][number];
+
 export default function Exercise() {
   const [opened, { open, close }] = useDisclosure(false);
-  const { data } = api.exercise.getExercises.useQuery();
   const [exerciseTypeFilters, setExerciseTypeFilters] = useState<
     ExerciseType[]
   >([]);
@@ -56,6 +57,11 @@ export default function Exercise() {
   const [muscleGroupFilters, setMuscleGroupFilters] = useState<MuscleGroup[]>(
     []
   );
+  const { data } = api.exercise.getExercises.useQuery({
+    exerciseTypeFilter: exerciseTypeFilters,
+    muscleCategoryFilter: muscleCategoryFilters,
+    muscleGroupFilter: muscleGroupFilters,
+  });
 
   return (
     <PageWithFab
@@ -76,23 +82,29 @@ export default function Exercise() {
       {data?.map((exercise) => (
         <ExerciseCard key={exercise.id} {...exercise}></ExerciseCard>
       ))}
-      <AddExerciseModal opened={opened} onClose={close}></AddExerciseModal>
+      <ConfigureExerciseModal
+        opened={opened}
+        onClose={close}
+      ></ConfigureExerciseModal>
     </PageWithFab>
   );
 }
 
-function ExerciseCard(props: Exercise) {
+function ExerciseCard(props: ExerciseRecord) {
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const [opened, { open, close }] = useDisclosure(false);
+  const context = api.useContext();
 
   const totalCount = (
     <Box style={{ marginLeft: "auto", marginRight: 0 }}>
-      Total Sessions: {0 /* TODO */}
+      Total Sessions: {props._count.workouts}
     </Box>
   );
   const deleteMut = api.exercise.deleteExercise.useMutation();
 
   const deleteFunc = async () => {
     await deleteMut.mutateAsync(props.id);
+    await context.exercise.getExercises.invalidate();
   };
 
   return (
@@ -150,7 +162,13 @@ function ExerciseCard(props: Exercise) {
             <Button variant="light" color="green" mt="md" radius="md">
               Start
             </Button>
-            <Button variant="light" color="blue" mt="md" radius="md">
+            <Button
+              variant="light"
+              color="blue"
+              mt="md"
+              radius="md"
+              onClick={open}
+            >
               Edit
             </Button>
             <Button
@@ -166,29 +184,39 @@ function ExerciseCard(props: Exercise) {
           {isMobile || totalCount}
         </Flex>
       </Flex>
+      <ConfigureExerciseModal
+        existingExercise={props}
+        onClose={close}
+        opened={opened}
+      />
     </Card>
   );
 }
 
-interface AddExerciseModalProps {
+interface ConfigureExerciseModalProps {
   opened: boolean;
   onClose: () => void;
+  existingExercise?: Exercise;
 }
 
-interface AddExerciseModalFormValues {
+interface ConfigureExerciseModalFormValues {
   name: string;
   muscleCategory: MuscleCategory | "";
   muscleGroup: MuscleGroup | "";
   exerciseType: ExerciseType | "";
 }
 
-function AddExerciseModal({ opened, onClose: close }: AddExerciseModalProps) {
-  const form = useForm<AddExerciseModalFormValues>({
+function ConfigureExerciseModal({
+  opened,
+  onClose: close,
+  existingExercise,
+}: ConfigureExerciseModalProps) {
+  const form = useForm<ConfigureExerciseModalFormValues>({
     initialValues: {
-      name: "",
-      exerciseType: "",
-      muscleGroup: "",
-      muscleCategory: "",
+      name: existingExercise?.name ?? "",
+      exerciseType: existingExercise?.exerciseType ?? "",
+      muscleGroup: existingExercise?.muscleGroup ?? "",
+      muscleCategory: existingExercise?.muscleCategory ?? "",
     },
     validate: {
       name: (value) => value.trim().length == 0,
@@ -196,15 +224,26 @@ function AddExerciseModal({ opened, onClose: close }: AddExerciseModalProps) {
       muscleCategory: (value) => value == "",
     },
   });
-  const mut = api.exercise.addExercise.useMutation();
+  const addMutation = api.exercise.addExercise.useMutation();
+  const updateMutation = api.exercise.updateExercise.useMutation();
   const context = api.useContext();
 
-  const createExercise = async (values: AddExerciseModalFormValues) => {
+  const submitHandler = async (values: ConfigureExerciseModalFormValues) => {
+    if (existingExercise) {
+      await updateExercise(values);
+    } else {
+      await createExercise(values);
+    }
+    await context.exercise.getExercises.invalidate();
+    close();
+  };
+
+  const createExercise = async (values: ConfigureExerciseModalFormValues) => {
     if (
       IsExerciseType(values.exerciseType) &&
       IsMuscleCategory(values.muscleCategory)
     ) {
-      await mut.mutateAsync({
+      await addMutation.mutateAsync({
         name: values.name,
         muscleCategory: values.muscleCategory,
         muscleGroup: IsMuscleGroup(values.muscleGroup)
@@ -212,14 +251,33 @@ function AddExerciseModal({ opened, onClose: close }: AddExerciseModalProps) {
           : undefined,
         exerciseType: values.exerciseType,
       });
-      await context.exercise.getExercises.invalidate();
-      close();
+    }
+  };
+
+  const updateExercise = async (values: ConfigureExerciseModalFormValues) => {
+    if (
+      IsExerciseType(values.exerciseType) &&
+      IsMuscleCategory(values.muscleCategory)
+    ) {
+      await updateMutation.mutateAsync({
+        id: existingExercise?.id ?? "",
+        name: values.name,
+        muscleCategory: values.muscleCategory,
+        muscleGroup: IsMuscleGroup(values.muscleGroup)
+          ? values.muscleGroup
+          : undefined,
+        exerciseType: values.exerciseType,
+      });
     }
   };
 
   return (
-    <Modal opened={opened} onClose={close} title="Add new Exercise">
-      <form onSubmit={form.onSubmit((values) => void createExercise(values))}>
+    <Modal
+      opened={opened}
+      onClose={close}
+      title={`${existingExercise ? "Update" : "Create new"} Exercise`}
+    >
+      <form onSubmit={form.onSubmit((values) => void submitHandler(values))}>
         <TextInput
           label={"Exercise Name"}
           {...form.getInputProps("name")}
@@ -246,7 +304,9 @@ function AddExerciseModal({ opened, onClose: close }: AddExerciseModalProps) {
           <Button onClick={close} type={"reset"} color={"red"}>
             Cancel
           </Button>
-          <Button type={"submit"}>Add Exercise</Button>
+          <Button type={"submit"}>
+            {existingExercise ? "Update" : "Add"} Exercise
+          </Button>
         </Group>
       </form>
     </Modal>

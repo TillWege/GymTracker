@@ -21,13 +21,29 @@ export const exerciseRouter = createTRPCRouter({
       return await ctx.prisma.exercise.findMany({
         where: {
           exerciseType: {
-            in: input?.exerciseTypeFilter,
+            in:
+              input?.exerciseTypeFilter.length == 0
+                ? undefined
+                : input?.exerciseTypeFilter,
           },
           muscleCategory: {
-            in: input?.muscleCategoryFilter,
+            in:
+              input?.muscleCategoryFilter.length == 0
+                ? undefined
+                : input?.muscleCategoryFilter,
           },
           muscleGroup: {
-            in: input?.muscleGroupFilter,
+            in:
+              input?.muscleGroupFilter.length == 0
+                ? undefined
+                : input?.muscleGroupFilter,
+          },
+        },
+        include: {
+          _count: {
+            select: {
+              workouts: true,
+            },
           },
         },
       });
@@ -75,7 +91,7 @@ export const exerciseRouter = createTRPCRouter({
         name: z.string(),
         exerciseType: z.nativeEnum(ExerciseType),
         muscleCategory: z.nativeEnum(MuscleCategory),
-        muscleGroup: z.nativeEnum(MuscleGroup),
+        muscleGroup: z.union([z.nativeEnum(MuscleGroup), z.undefined()]),
       })
     )
     .mutation(async ({ ctx, input }) => {
