@@ -1,16 +1,13 @@
-import { createGetInitialProps } from "@mantine/next";
 import Document, { Head, Html, Main, NextScript } from "next/document";
-
-const getInitialProps = createGetInitialProps();
+import { ColorSchemeScript } from "@mantine/core";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export default class _Document extends Document {
-  static getInitialProps = getInitialProps;
-
   render() {
     return (
       <Html>
         <Head />
+        <ColorSchemeScript defaultColorScheme="auto" />
         <body>
           <Main />
           <NextScript />

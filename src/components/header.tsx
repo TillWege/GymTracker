@@ -12,7 +12,7 @@ export function Header() {
         width={32}
         height={32}
       />
-      <Title order={isMobile ? 3 : 1} align={"center"}>
+      <Title order={isMobile ? 3 : 1} ta={"center"}>
         Gym Tracker
       </Title>
     </Flex>

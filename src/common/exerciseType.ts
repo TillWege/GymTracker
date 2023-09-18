@@ -1,5 +1,5 @@
-import { ExerciseType, MuscleCategory } from "@prisma/client";
-import { MantineColor } from "@mantine/core";
+import { ExerciseType } from "@prisma/client";
+import { type MantineColor } from "@mantine/core";
 
 const values = Object.values(ExerciseType);
 
@@ -9,6 +9,8 @@ export function GetExerciseTypeDisplayString(type: ExerciseType): string {
       return "Free Weight";
     case ExerciseType.MACHINE:
       return "Machine";
+    case "CARDIO":
+      return "Cardio";
   }
 }
 
@@ -35,6 +37,8 @@ export function GetExerciseTypeColor(type: ExerciseType): MantineColor {
       return "blue";
     case ExerciseType.MACHINE:
       return "red";
+    case ExerciseType.CARDIO:
+      return "green";
   }
 }
 

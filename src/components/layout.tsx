@@ -1,14 +1,5 @@
 import { Header } from "~/components/header";
-import {
-  Box,
-  Flex,
-  Footer,
-  ScrollArea,
-  Tabs,
-  Text,
-  ThemeIcon,
-  Title,
-} from "@mantine/core";
+import { Box, Flex, ScrollArea, Tabs, Text, ThemeIcon } from "@mantine/core";
 import {
   IconBarbell,
   IconBuildingEstate,
@@ -30,7 +21,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const router = useRouter();
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobile = useMediaQuery("(max-width: 768px)") ?? false;
   const [expanded, { toggle }] = useDisclosure(!isMobile);
   const [selectedTab, setSelectedTab] = useState(
     router.pathname.split("/")[1] || "session"
@@ -92,15 +83,13 @@ export function Layout({ children }: LayoutProps) {
 
   return (
     <Box
-      sx={(theme) => ({
-        backgroundColor: theme.colors.dark[8],
-      })}
       style={{
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         width: "100%",
         height: "100vh",
+        backgroundColor: "var(--mantine-color-dark-8)",
       }}
     >
       <Header />
@@ -119,13 +108,11 @@ export function Layout({ children }: LayoutProps) {
               }
             : {
                 flex: "auto",
+                borderRight: "1px solid var(--mantine-color-dark-4)",
               }
         }
-        sx={(theme) => ({
-          borderRight: isMobile ? "" : `1px solid ${theme.colors.dark[4]}`,
-        })}
         orientation={isMobile ? "horizontal" : "vertical"}
-        onTabChange={(value) => {
+        onChange={(value) => {
           if (value == "collapse" || value == "login" || value == "logout") {
             return;
           }
@@ -195,7 +182,7 @@ export function Tab({
           {icon}
         </ThemeIcon>
         {expanded && (
-          <Text weight={700} size={"md"}>
+          <Text fw={700} size={"md"}>
             {title}
           </Text>
         )}
@@ -211,8 +198,8 @@ interface BottomProps {
 export function Bottom({ clearFunc }: BottomProps) {
   const path = useRouter().pathname.split("/")[1];
   return (
-    <Footer
-      height={30}
+    <Box
+      h={30}
       w={"100%"}
       style={{
         display: "flex",
@@ -221,16 +208,24 @@ export function Bottom({ clearFunc }: BottomProps) {
       }}
     >
       <Link href={"/about"} style={{ color: "inherit" }} onClick={clearFunc}>
-        <Text align={"center"} weight={path == "about" ? 700 : undefined}>
+        <Text
+          style={{ textAlign: "center" }}
+          fw={path == "about" ? 700 : undefined}
+        >
           About
         </Text>
       </Link>
-      <Text align={"center"}>By @Tillwege</Text>
+      <Text style={{ textAlign: "center" }}>By @Tillwege</Text>
       <Link href={"/privacy"} style={{ color: "inherit" }} onClick={clearFunc}>
-        <Text align={"center"} weight={path == "privacy" ? 700 : undefined}>
+        <Text
+          style={{
+            textAlign: "center",
+          }}
+          fw={path == "privacy" ? 700 : undefined}
+        >
           Privacy
         </Text>
       </Link>
-    </Footer>
+    </Box>
   );
 }

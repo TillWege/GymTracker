@@ -20,7 +20,7 @@ export function PageWithFab({
 
   return (
     <Box w={"100%"} h={"100%"} pt={"1rem"}>
-      <Group position={"apart"} align={"center"} mih={"2.5rem"}>
+      <Group justify={"space-between"} align={"center"} mih={"2.5rem"}>
         <Text>{pageTitle}:</Text>
         {titleChildren}
       </Group>

@@ -78,8 +78,8 @@ function SessionCard(props: WorkoutSession) {
         flexDirection: "column",
       }}
     >
-      <Group position="apart" mb="xs">
-        <Text weight={500}>
+      <Group justify="apart" mb="xs">
+        <Text fw={500}>
           Session: {GetDayCaption(props.startTimestamp)},{" "}
           {props.startTimestamp.toLocaleDateString()} started at{" "}
           {props.startTimestamp.toLocaleTimeString([], {
@@ -97,15 +97,15 @@ function SessionCard(props: WorkoutSession) {
       </Group>
 
       <Box style={{ flex: "auto" }}>
-        <Text size="sm" color="dimmed">
+        <Text size="sm" c="dimmed">
           More Information
         </Text>
 
-        <Group position="apart" mt="xs">
-          <Text size="sm" color="dimmed">
+        <Group justify="apart" mt="xs">
+          <Text size="sm" c="dimmed">
             Exercises: {0 /* TODO */}
           </Text>
-          <Text size="sm" color="dimmed">
+          <Text size="sm" c="dimmed">
             Calories Burned: {0 /* TODO */}
           </Text>
         </Group>
@@ -149,10 +149,10 @@ function AddSessionModal({ close, opened }: SessionModalProps) {
 
   return (
     <Modal opened={opened} onClose={close} withCloseButton={false}>
-      <Text align={"center"} mb={"md"}>
+      <Text ta={"center"} mb={"md"}>
         Are you sure you want to start a Workout?
       </Text>
-      <Group position="center">
+      <Group justify="center">
         <Button onClick={close} type={"reset"} color={"red"}>
           Cancel
         </Button>

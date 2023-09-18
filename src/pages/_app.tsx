@@ -5,6 +5,7 @@ import { api } from "~/utils/api";
 import { MantineProvider } from "@mantine/core";
 import { Layout } from "~/components/layout";
 import Head from "next/head";
+import "@mantine/core/styles.css";
 
 const myApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -16,13 +17,7 @@ const myApp: AppType<{ session: Session | null }> = ({
         <title>GymTracker</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <MantineProvider
-        withGlobalStyles
-        withNormalizeCSS
-        theme={{
-          colorScheme: "dark",
-        }}
-      >
+      <MantineProvider defaultColorScheme={"dark"}>
         <SessionProvider session={session}>
           <Layout>
             <Component {...pageProps} />

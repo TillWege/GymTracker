@@ -122,14 +122,14 @@ function ExerciseCard(props: ExerciseRecord) {
       }}
     >
       <Flex direction={"column"} h={"100%"} justify={"space-between"}>
-        <Group position={"apart"} align={"start"}>
+        <Group justify={"space-between"} align={"start"}>
           <Flex direction={"column"}>
             <Text>
               {isMobile || "Exercise Name:"} {props.name}
             </Text>
             <Text>
               {isMobile || "Exercise Type:"}{" "}
-              <Badge color={GetExerciseTypeColor(props.exerciseType)}>
+              <Badge bg={GetExerciseTypeColor(props.exerciseType)}>
                 {GetExerciseTypeDisplayString(props.exerciseType)}
               </Badge>
             </Text>
@@ -137,14 +137,14 @@ function ExerciseCard(props: ExerciseRecord) {
           <Flex direction={"column"}>
             <Text style={{ marginLeft: "auto", marginRight: 0 }}>
               {isMobile || "Category:"}
-              <Badge color={GetMuscleCategoryColor(props.muscleCategory)}>
+              <Badge bg={GetMuscleCategoryColor(props.muscleCategory)}>
                 {GetMuscleCategoryDisplayString(props.muscleCategory)}
               </Badge>
             </Text>
             <Text style={{ marginLeft: "auto", marginRight: 0 }}>
               {isMobile || "Muscle Group:"}
               <Badge
-                color={
+                bg={
                   props.muscleGroup
                     ? GetMuscleGroupColor(props.muscleGroup)
                     : "gray"
@@ -307,7 +307,7 @@ function ConfigureExerciseModal({
           withAsterisk
           {...form.getInputProps("exerciseType")}
         />
-        <Group position="center" mt={"md"}>
+        <Group justify="center" mt={"md"}>
           <Button onClick={close} type={"reset"} color={"red"}>
             Cancel
           </Button>
@@ -453,7 +453,7 @@ function ExerciseFilterButton({
           </Badge>
         ))}
         <Divider mt={"sm"} mb={"sm"} />
-        <Group position={"center"}>
+        <Group justify={"center"}>
           <Button onClick={resetFilters} type={"reset"} color={"red"}>
             Clear Filters
           </Button>

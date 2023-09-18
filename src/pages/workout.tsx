@@ -1,9 +1,10 @@
-import { Button, Checkbox, Modal, NativeSelect, Text } from "@mantine/core";
+import { Checkbox, Modal, NativeSelect } from "@mantine/core";
 import { PageWithFab } from "~/components/pageWithFab";
 import { useDisclosure } from "@mantine/hooks";
 import { api } from "~/utils/api";
-import { SelectItem } from "@mantine/core/lib/Select/types";
+
 import { useForm } from "@mantine/form";
+import { type ComboboxItem } from "@mantine/core/lib/components/Combobox/Combobox.types";
 
 export default function Workout() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -36,7 +37,7 @@ function AddWorkoutModal({ opened, onClose }: AddWorkoutModalProps) {
     },
   });
 
-  const sessionSelectionItems: SelectItem[] = sessions?.map((session) => ({
+  const sessionSelectionItems: ComboboxItem[] = sessions?.map((session) => ({
     label: `Gym Session ${session.startTimestamp.toLocaleDateString()} started at ${session.startTimestamp.toLocaleTimeString(
       [],
       {

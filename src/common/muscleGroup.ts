@@ -1,9 +1,6 @@
 import { MuscleCategory, MuscleGroup } from "@prisma/client";
-import {
-  GetMuscleCategoryColor,
-  GetMuscleCategoryDisplayString,
-} from "~/common/muscleCategory";
-import { MantineColor } from "@mantine/core";
+import { GetMuscleCategoryColor } from "~/common/muscleCategory";
+import { type MantineColor } from "@mantine/core";
 
 const values = Object.values(MuscleGroup);
 
