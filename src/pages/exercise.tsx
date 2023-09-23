@@ -8,6 +8,7 @@ import {
   Group,
   Modal,
   NativeSelect,
+  Select,
   Text,
   TextInput,
 } from "@mantine/core";
@@ -42,7 +43,7 @@ import {
 } from "~/common/muscleGroup";
 import { api, type RouterOutputs } from "~/utils/api";
 import { type Exercise } from ".prisma/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 
 type ExerciseRecord = RouterOutputs["exercise"]["getExercises"][number];
@@ -97,7 +98,7 @@ function ExerciseCard(props: ExerciseRecord) {
   const context = api.useContext();
 
   const totalCount = (
-    <Box style={{ marginLeft: "auto", marginRight: 0 }}>
+    <Box style={{ marginLeft: "auto", marginRight: 0 }} c="dimmed">
       Total Workouts: {props._count.workouts}
     </Box>
   );
@@ -127,21 +128,21 @@ function ExerciseCard(props: ExerciseRecord) {
             <Text>
               {isMobile || "Exercise Name:"} {props.name}
             </Text>
-            <Text>
+            <Box>
               {isMobile || "Exercise Type:"}{" "}
               <Badge bg={GetExerciseTypeColor(props.exerciseType)}>
                 {GetExerciseTypeDisplayString(props.exerciseType)}
               </Badge>
-            </Text>
+            </Box>
           </Flex>
           <Flex direction={"column"}>
-            <Text style={{ marginLeft: "auto", marginRight: 0 }}>
+            <Box style={{ marginLeft: "auto", marginRight: 0 }}>
               {isMobile || "Category:"}
               <Badge bg={GetMuscleCategoryColor(props.muscleCategory)}>
                 {GetMuscleCategoryDisplayString(props.muscleCategory)}
               </Badge>
-            </Text>
-            <Text style={{ marginLeft: "auto", marginRight: 0 }}>
+            </Box>
+            <Box style={{ marginLeft: "auto", marginRight: 0 }}>
               {isMobile || "Muscle Group:"}
               <Badge
                 bg={
@@ -154,7 +155,7 @@ function ExerciseCard(props: ExerciseRecord) {
                   ? GetMuscleGroupDisplayString(props.muscleGroup)
                   : "unknown"}
               </Badge>
-            </Text>
+            </Box>
             {isMobile && totalCount}
           </Flex>
         </Group>
@@ -235,6 +236,10 @@ function ConfigureExerciseModal({
   const updateMutation = api.exercise.updateExercise.useMutation();
   const context = api.useContext();
 
+  useEffect(() => {
+    form.reset();
+  }, [opened]);
+
   const submitHandler = async (values: ConfigureExerciseModalFormValues) => {
     if (existingExercise) {
       await updateExercise(values);
@@ -290,21 +295,24 @@ function ConfigureExerciseModal({
           {...form.getInputProps("name")}
           withAsterisk
         />
-        <NativeSelect
+        <Select
           data={GetMuscleCategorySelection()}
           label={"Select Muscle Category"}
+          placeholder={"Muscle Category"}
           {...form.getInputProps("muscleCategory")}
           withAsterisk
         />
-        <NativeSelect
+        <Select
           data={GetMuscleGroupSelection()}
           label={"Select Muscle Group"}
+          placeholder={"Muscle Group"}
           {...form.getInputProps("muscleGroup")}
         />
-        <NativeSelect
+        <Select
           data={GetExerciseTypeSelection()}
           label={"Select Exercise Type"}
           withAsterisk
+          placeholder={"Exercise Type"}
           {...form.getInputProps("exerciseType")}
         />
         <Group justify="center" mt={"md"}>

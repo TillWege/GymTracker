@@ -22,13 +22,10 @@ export function GetExerciseTypeSelection(): {
   value: ExerciseType | "";
   label: string;
 }[] {
-  return [
-    { value: "", label: "Select type... " },
-    ...values.map((value) => ({
-      value,
-      label: GetExerciseTypeDisplayString(value),
-    })),
-  ];
+  return values.map((value) => ({
+    value,
+    label: GetExerciseTypeDisplayString(value),
+  }));
 }
 
 export function GetExerciseTypeColor(type: ExerciseType): MantineColor {

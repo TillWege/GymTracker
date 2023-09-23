@@ -1,24 +1,29 @@
 import {
-  Checkbox,
-  Combobox,
-  InputBase,
   Modal,
-  NativeSelect,
-  useCombobox,
-  Input,
   Select,
+  Group,
+  Button,
+  Card,
+  Text,
+  Box,
+  Collapse,
+  List,
+  ActionIcon,
+  Badge,
 } from "@mantine/core";
 import { PageWithFab } from "~/components/pageWithFab";
 import { useDisclosure } from "@mantine/hooks";
 import { api } from "~/utils/api";
-
 import { useForm } from "@mantine/form";
 import { type ComboboxItem } from "@mantine/core/lib/components/Combobox/Combobox.types";
-import { WorkoutSession } from ".prisma/client";
-import { useState } from "react";
+import { useEffect } from "react";
+import { Workout } from ".prisma/client";
+import { IconX } from "@tabler/icons-react";
+import { GetSessionCaption } from "~/common/gymsession";
 
 export default function Workout() {
   const [opened, { open, close }] = useDisclosure(false);
+  const { data } = api.workout.getWorkouts.useQuery();
 
   return (
     <PageWithFab
@@ -27,8 +32,16 @@ export default function Workout() {
       pageTitle={"Workout list"}
     >
       <AddWorkoutModal opened={opened} onClose={close} />
+      {data?.map((workout) => {
+        return <WorkoutCard key={workout.id} {...workout}></WorkoutCard>;
+      })}
     </PageWithFab>
   );
+}
+
+interface AddWorkoutForm {
+  session: string;
+  exercise: string;
 }
 
 interface AddWorkoutModalProps {
@@ -37,70 +50,162 @@ interface AddWorkoutModalProps {
 }
 
 function AddWorkoutModal({ opened, onClose }: AddWorkoutModalProps) {
-  const { data: sessions } = api.session.getSessionsByUser.useQuery();
-  const form = useForm({
+  const form = useForm<AddWorkoutForm>({
     initialValues: {
       session: "",
+      exercise: "",
     },
     validate: {
       session: (value) => value == "",
+      exercise: (value) => value == "",
     },
   });
-  const combobox = useCombobox({
-    onDropdownClose: () => combobox.resetSelectedOption(),
-  });
+  const mut = api.workout.addWorkout.useMutation();
+  const context = api.useContext();
+  const { data: sessions } = api.session.getSessionsByUser.useQuery();
+  const { data: exercises } = api.exercise.getExercises.useQuery();
 
-  const getSessionCaption = (session: WorkoutSession) => {
-    return `Gym Session ${session.startTimestamp.toLocaleDateString()} started at ${session.startTimestamp.toLocaleTimeString(
-      [],
-      {
-        hour: "2-digit",
-        minute: "2-digit",
-      }
-    )}`;
+  useEffect(() => {
+    form.reset();
+  }, [opened]);
+
+  const addWorkout = async (values: AddWorkoutForm) => {
+    await mut.mutateAsync({
+      sessionId: values.session,
+      exerciseId: values.exercise,
+    });
+    await context.workout.getWorkouts.invalidate();
+    onClose();
   };
 
-  const getSessionCaptionByCaptionId = (id: string) => {
+  const getSessionCaption = (id: string) => {
     const session = sessions?.find((session) => session.id == id);
-    return session ? getSessionCaption(session) : "";
+    return session ? GetSessionCaption(session) : "";
   };
 
-  const comboBoxItems =
+  const sessionOptions: ComboboxItem[] =
     sessions?.map((session) => {
-      return (
-        <Combobox.Option key={session.id} value={session.id}>
-          {getSessionCaption(session)}
-        </Combobox.Option>
-      );
+      return {
+        label: getSessionCaption(session.id),
+        value: session.id,
+      };
+    }) ?? [];
+
+  const exerciseOptions: ComboboxItem[] =
+    exercises?.map((exercise) => {
+      return {
+        label: exercise.name,
+        value: exercise.id,
+      };
     }) ?? [];
 
   return (
     <Modal opened={opened} onClose={onClose} title={"Start new Workout"}>
-      <Combobox
-        store={combobox}
-        onOptionSubmit={(val) => {
-          form.setFieldValue("session", val);
-          combobox.closeDropdown();
-        }}
+      <form
+        onSubmit={form.onSubmit((values) => {
+          void addWorkout(values);
+        })}
       >
-        <Combobox.Target>
-          <InputBase
-            component="button"
-            pointer
-            rightSection={<Combobox.Chevron />}
-            onClick={() => combobox.toggleDropdown()}
-          >
-            {form.values.session ? (
-              getSessionCaptionByCaptionId(form.values.session)
-            ) : (
-              <Input.Placeholder>Select Gym-Session</Input.Placeholder>
-            )}
-          </InputBase>
-        </Combobox.Target>
-        <Combobox.Dropdown>
-          <Combobox.Options>{comboBoxItems}</Combobox.Options>
-        </Combobox.Dropdown>
-      </Combobox>
+        <Select
+          label={"Select Gym-Session"}
+          placeholder={"Session"}
+          data={sessionOptions}
+          withAsterisk
+          {...form.getInputProps("session")}
+        />
+        <Select
+          label={"Select Exercise"}
+          placeholder={"Exercise"}
+          data={exerciseOptions}
+          withAsterisk
+          {...form.getInputProps("exercise")}
+        />
+        <Group justify="center" mt={"md"}>
+          <Button onClick={onClose} type={"reset"} color={"red"}>
+            Cancel
+          </Button>
+          <Button type={"submit"}>Start Workout</Button>
+        </Group>
+      </form>
     </Modal>
+  );
+}
+
+function WorkoutCard(props: Workout) {
+  const [opened, { toggle }] = useDisclosure(false);
+
+  const deleteSet = async (id: string) => {
+    console.log(id);
+  };
+
+  return (
+    <Card
+      shadow="sm"
+      radius="md"
+      withBorder
+      mb={"md"}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
+      <Box>
+        <Group>
+          <Text>Workout:</Text>
+          <Badge style={{ marginLeft: "auto", marginRight: 0 }}>New PR</Badge>
+        </Group>
+        <Text>Gym-Session</Text>
+        <Text size="sm" c="dimmed">
+          Sets: {0 /* TODO */}
+        </Text>
+        <Text size="sm" c="dimmed">
+          Total Reps: {0 /* TODO */}
+        </Text>
+        <Text size="sm" c="dimmed">
+          Total Weight: {0 /* TODO */}
+        </Text>
+      </Box>
+      <Collapse in={opened}>
+        <List mt={"sm"} center spacing={"md"}>
+          {["1", "2", "3"].map((set) => {
+            return (
+              <List.Item
+                key={set}
+                icon={
+                  <ActionIcon
+                    variant={"light"}
+                    color={"red"}
+                    size={"sm"}
+                    onClick={() => void deleteSet(set)}
+                  >
+                    <IconX />
+                  </ActionIcon>
+                }
+              >
+                Set {set}
+              </List.Item>
+            );
+          })}
+        </List>
+      </Collapse>
+      <Group>
+        <Button
+          variant="light"
+          color="blue"
+          mt="md"
+          radius="md"
+          onClick={toggle}
+        >
+          {opened ? "Hide" : "Show"} Set Details
+        </Button>
+        <Button variant="light" color="red" mt="md" radius="md">
+          Delete Workout
+        </Button>
+        <Button variant="light" color="green" mt="md" radius="md">
+          Add Set
+        </Button>
+      </Group>
+    </Card>
   );
 }

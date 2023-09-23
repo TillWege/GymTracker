@@ -43,13 +43,10 @@ export function GetMuscleGroupSelection(): {
   value: MuscleGroup | "";
   label: string;
 }[] {
-  return [
-    { value: "", label: "" },
-    ...values.map((value) => ({
-      value,
-      label: GetMuscleGroupDisplayString(value),
-    })),
-  ];
+  return values.map((value) => ({
+    value,
+    label: GetMuscleGroupDisplayString(value),
+  }));
 }
 
 export function GetCategoryFromGroup(group: MuscleGroup): MuscleCategory {
