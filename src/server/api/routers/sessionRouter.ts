@@ -50,17 +50,4 @@ export const sessionRouter = createTRPCRouter({
         },
       });
     }),
-  getLatestSession: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.workoutSession.findFirst({
-      where: {
-        user: {
-          id: ctx.session.user.id,
-        },
-      },
-      orderBy: {
-        startTimestamp: "desc",
-      },
-      take: 1,
-    });
-  }),
 });

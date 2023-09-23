@@ -1,10 +1,21 @@
-import { Checkbox, Modal, NativeSelect } from "@mantine/core";
+import {
+  Checkbox,
+  Combobox,
+  InputBase,
+  Modal,
+  NativeSelect,
+  useCombobox,
+  Input,
+  Select,
+} from "@mantine/core";
 import { PageWithFab } from "~/components/pageWithFab";
 import { useDisclosure } from "@mantine/hooks";
 import { api } from "~/utils/api";
 
 import { useForm } from "@mantine/form";
 import { type ComboboxItem } from "@mantine/core/lib/components/Combobox/Combobox.types";
+import { WorkoutSession } from ".prisma/client";
+import { useState } from "react";
 
 export default function Workout() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -26,43 +37,70 @@ interface AddWorkoutModalProps {
 }
 
 function AddWorkoutModal({ opened, onClose }: AddWorkoutModalProps) {
-  const { data: latestSession } = api.session.getLatestSession.useQuery();
   const { data: sessions } = api.session.getSessionsByUser.useQuery();
   const form = useForm({
     initialValues: {
-      session: latestSession?.id ?? "",
+      session: "",
     },
     validate: {
       session: (value) => value == "",
     },
   });
+  const combobox = useCombobox({
+    onDropdownClose: () => combobox.resetSelectedOption(),
+  });
 
-  const sessionSelectionItems: ComboboxItem[] = sessions?.map((session) => ({
-    label: `Gym Session ${session.startTimestamp.toLocaleDateString()} started at ${session.startTimestamp.toLocaleTimeString(
+  const getSessionCaption = (session: WorkoutSession) => {
+    return `Gym Session ${session.startTimestamp.toLocaleDateString()} started at ${session.startTimestamp.toLocaleTimeString(
       [],
       {
         hour: "2-digit",
         minute: "2-digit",
       }
-    )}`,
-    value: session.id,
-  })) ?? [
-    {
-      label: "No sessions found",
-      value: "",
-    },
-  ];
+    )}`;
+  };
+
+  const getSessionCaptionByCaptionId = (id: string) => {
+    const session = sessions?.find((session) => session.id == id);
+    return session ? getSessionCaption(session) : "";
+  };
+
+  const comboBoxItems =
+    sessions?.map((session) => {
+      return (
+        <Combobox.Option key={session.id} value={session.id}>
+          {getSessionCaption(session)}
+        </Combobox.Option>
+      );
+    }) ?? [];
 
   return (
     <Modal opened={opened} onClose={onClose} title={"Start new Workout"}>
-      <NativeSelect
-        data={sessionSelectionItems}
-        label={"Select Gym Session"}
-        disabled={sessionSelectionItems.length == 0}
-        {...form.getInputProps("session")}
-      />
-      <Checkbox mt={"md"} mb={"sm"} label={"Start new Gym Session"} />
-      <NativeSelect data={[]} label={"Select Exercise"} />
+      <Combobox
+        store={combobox}
+        onOptionSubmit={(val) => {
+          form.setFieldValue("session", val);
+          combobox.closeDropdown();
+        }}
+      >
+        <Combobox.Target>
+          <InputBase
+            component="button"
+            pointer
+            rightSection={<Combobox.Chevron />}
+            onClick={() => combobox.toggleDropdown()}
+          >
+            {form.values.session ? (
+              getSessionCaptionByCaptionId(form.values.session)
+            ) : (
+              <Input.Placeholder>Select Gym-Session</Input.Placeholder>
+            )}
+          </InputBase>
+        </Combobox.Target>
+        <Combobox.Dropdown>
+          <Combobox.Options>{comboBoxItems}</Combobox.Options>
+        </Combobox.Dropdown>
+      </Combobox>
     </Modal>
   );
 }
