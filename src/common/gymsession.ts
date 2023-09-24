@@ -1,4 +1,4 @@
-import { WorkoutSession } from "@prisma/client";
+import { type WorkoutSession } from "@prisma/client";
 
 export function GetSessionCaption(session: WorkoutSession): string {
   return `Gym Session ${session.startTimestamp.toLocaleDateString()} started at ${session.startTimestamp.toLocaleTimeString(

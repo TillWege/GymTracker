@@ -55,6 +55,19 @@ export const workoutRouter = createTRPCRouter({
         },
       });
     }),
+  deleteWorkout: protectedProcedure
+    .input(z.object({ workoutId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.workout.delete({
+        where: {
+          id: input.workoutId,
+          user: {
+            id: ctx.session.user.id,
+          },
+        },
+      });
+    }),
+
   addSet: protectedProcedure
     .input(
       z.object({
@@ -91,5 +104,10 @@ export const workoutRouter = createTRPCRouter({
           },
         },
       });
+    }),
+  deleteSet: protectedProcedure
+    .input(z.object({ setId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return null;
     }),
 });
