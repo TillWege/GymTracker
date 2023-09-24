@@ -13,13 +13,15 @@ import {
 } from "@mantine/core";
 import { PageWithFab } from "~/components/pageWithFab";
 import { useDisclosure } from "@mantine/hooks";
-import { api } from "~/utils/api";
+import { api, RouterOutputs } from "~/utils/api";
 import { useForm } from "@mantine/form";
 import { type ComboboxItem } from "@mantine/core/lib/components/Combobox/Combobox.types";
 import { useEffect } from "react";
 import { Workout } from ".prisma/client";
 import { IconX } from "@tabler/icons-react";
 import { GetSessionCaption } from "~/common/gymsession";
+
+type WorkoutRecord = RouterOutputs["workout"]["getWorkouts"][number];
 
 export default function Workout() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -131,7 +133,7 @@ function AddWorkoutModal({ opened, onClose }: AddWorkoutModalProps) {
   );
 }
 
-function WorkoutCard(props: Workout) {
+function WorkoutCard(props: WorkoutRecord) {
   const [opened, { toggle }] = useDisclosure(false);
 
   const deleteSet = async (id: string) => {
@@ -157,33 +159,34 @@ function WorkoutCard(props: Workout) {
         </Group>
         <Text>Gym-Session</Text>
         <Text size="sm" c="dimmed">
-          Sets: {0 /* TODO */}
+          Sets: {props.sets.length}
         </Text>
         <Text size="sm" c="dimmed">
-          Total Reps: {0 /* TODO */}
+          Total Reps: {props.sets.reduce((acc, set) => acc + set.reps, 0)}
         </Text>
         <Text size="sm" c="dimmed">
-          Total Weight: {0 /* TODO */}
+          Total Weight:{" "}
+          {props.sets.reduce((acc, set) => acc + set.reps * set.weight, 0)}
         </Text>
       </Box>
       <Collapse in={opened}>
         <List mt={"sm"} center spacing={"md"}>
-          {["1", "2", "3"].map((set) => {
+          {props.sets.map((set, idx) => {
             return (
               <List.Item
-                key={set}
+                key={set.id}
                 icon={
                   <ActionIcon
                     variant={"light"}
                     color={"red"}
                     size={"sm"}
-                    onClick={() => void deleteSet(set)}
+                    onClick={() => void deleteSet(set.id)}
                   >
                     <IconX />
                   </ActionIcon>
                 }
               >
-                Set {set}
+                Set {idx}
               </List.Item>
             );
           })}
@@ -196,6 +199,7 @@ function WorkoutCard(props: Workout) {
           mt="md"
           radius="md"
           onClick={toggle}
+          disabled={props.sets.length == 0}
         >
           {opened ? "Hide" : "Show"} Set Details
         </Button>
