@@ -118,7 +118,7 @@ model Workout {
   id         String         @id @default(cuid())
   session    WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   sessionId  String
-  exercise   Exercise       @relation(fields: [exerciseId], references: [id])
+  exercise   Exercise       @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   exerciseId String
   sets       Set[]
   user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)

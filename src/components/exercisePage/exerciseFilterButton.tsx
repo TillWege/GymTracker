@@ -76,9 +76,8 @@ export function ExerciseFilterButton({
       <Button onClick={showFilters}>Configure Filters</Button>
       <Modal
         opened={filterOpen}
-        onClose={() => {}}
+        onClose={closeFilter}
         title={"Configure Filters"}
-        withCloseButton={false}
       >
         <Text>Exercise Type</Text>
         {GetExerciseTypeValues().map((type, index) => (
