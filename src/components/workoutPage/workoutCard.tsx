@@ -14,6 +14,7 @@ import {
 } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
 import { DeleteButton } from "~/components/DeleteButton";
+import { AddSetButton } from "~/components/workoutPage/addSetButton";
 
 type WorkoutRecord = RouterOutputs["workout"]["getWorkouts"][number];
 
@@ -101,19 +102,11 @@ export function WorkoutCard(props: WorkoutRecord) {
         </Button>
         {session.data?.user?.id == props.userId && (
           <>
-            <DeleteButton caption={"Delete Workout"} onClick={() => {}} />
-            <AddSetButton></AddSetButton>
+            <DeleteButton caption={"Delete Workout"} onClick={deleteWorkout} />
+            <AddSetButton />
           </>
         )}
       </Group>
     </Card>
-  );
-}
-
-function AddSetButton() {
-  return (
-    <Button variant="light" color="green" mt="md" radius="md">
-      Add Set
-    </Button>
   );
 }

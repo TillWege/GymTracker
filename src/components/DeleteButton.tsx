@@ -3,7 +3,7 @@ import { useDisclosure } from "@mantine/hooks";
 
 interface DeleteButtonProps {
   caption: string;
-  onClick: () => void;
+  onClick: () => Promise<void>;
 }
 
 export function DeleteButton({ caption, onClick }: DeleteButtonProps) {
@@ -22,7 +22,7 @@ export function DeleteButton({ caption, onClick }: DeleteButtonProps) {
           <Button color="blue" onClick={close}>
             Cancel
           </Button>
-          <Button color="red" onClick={onClick}>
+          <Button color="red" onClick={() => void onClick()}>
             Delete
           </Button>
         </Group>
