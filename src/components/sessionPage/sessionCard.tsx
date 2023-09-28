@@ -124,12 +124,6 @@ export function SessionCard(props: WorkoutSession) {
               >
                 {isMobile ? "End" : "End Session"}
               </Button>
-              <DeleteButton
-                caption={isMobile ? "Delete" : "Delete Session"}
-                onClick={() => {
-                  // TODO
-                }}
-              />
             </>
           )}
       </Group>
