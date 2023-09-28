@@ -1,5 +1,6 @@
 import { Button, Group, Modal, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { IconTrash } from "@tabler/icons-react";
 
 interface DeleteButtonProps {
   caption: string;
@@ -11,7 +12,14 @@ export function DeleteButton({ caption, onClick }: DeleteButtonProps) {
 
   return (
     <>
-      <Button variant="light" color="red" mt="md" radius="md" onClick={open}>
+      <Button
+        variant="light"
+        color="red"
+        mt="md"
+        radius="md"
+        onClick={open}
+        leftSection={<IconTrash />}
+      >
         {caption}
       </Button>
       <Modal opened={opened} onClose={close} title={caption}>

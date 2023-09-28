@@ -10,32 +10,40 @@ import {
   Collapse,
   Group,
   List,
+  Modal,
   Text,
 } from "@mantine/core";
-import { IconX } from "@tabler/icons-react";
+import { IconX, IconZoomIn, IconZoomOut } from "@tabler/icons-react";
 import { DeleteButton } from "~/components/DeleteButton";
 import { AddSetButton } from "~/components/workoutPage/addSetButton";
+import { type Set } from "@prisma/client";
+import { GetSessionCaption } from "~/common/gymsession";
+import { WorkoutRecord } from "~/pages/workout";
+import { useIsMobile } from "~/common/hooks";
 
-type WorkoutRecord = RouterOutputs["workout"]["getWorkouts"][number];
+interface WorkoutCardProps {
+  workout: WorkoutRecord;
+}
 
-export function WorkoutCard(props: WorkoutRecord) {
+export function WorkoutCard({ workout }: WorkoutCardProps) {
   const [opened, { toggle }] = useDisclosure(false);
   const delWorkoutMut = api.workout.deleteWorkout.useMutation();
   const delSetMut = api.workout.deleteSet.useMutation();
-  
   const session = useSession();
-
   const context = api.useContext();
-  const deleteSet = async (id: string) => {
-    console.log(id);
-  };
+  const isMobile = useIsMobile();
+  const { data: prSet } = api.workout.getPRSet.useQuery({
+    exerciseId: workout.exerciseId,
+  });
 
   const deleteWorkout = async () => {
     await delWorkoutMut.mutateAsync({
-      workoutId: props.id,
+      workoutId: workout.id,
     });
     await context.workout.getWorkouts.invalidate();
   };
+
+  const containsPr = workout.sets.some((set) => set.id == prSet?.id);
 
   return (
     <Card
@@ -51,40 +59,39 @@ export function WorkoutCard(props: WorkoutRecord) {
     >
       <Box>
         <Group>
-          <Text>Workout:</Text>
-          <Badge style={{ marginLeft: "auto", marginRight: 0 }}>New PR</Badge>
+          <Text>Workout: {workout.exercise.name}</Text>
+          {containsPr && (
+            <Badge style={{ marginLeft: "auto", marginRight: 0 }}>New PR</Badge>
+          )}
         </Group>
-        <Text>Gym-Session</Text>
+        <Text>{GetSessionCaption(workout.session)}</Text>
         <Text size="sm" c="dimmed">
-          Sets: {props.sets.length}
+          Sets: {workout.sets.length}
         </Text>
         <Text size="sm" c="dimmed">
-          Total Reps: {props.sets.reduce((acc, set) => acc + set.reps, 0)}
+          Total Reps: {workout.sets.reduce((acc, set) => acc + set.reps, 0)}
         </Text>
         <Text size="sm" c="dimmed">
           Total Weight:{" "}
-          {props.sets.reduce((acc, set) => acc + set.reps * set.weight, 0)}
+          {workout.sets.reduce((acc, set) => acc + set.reps * set.weight, 0)}
         </Text>
       </Box>
       <Collapse in={opened}>
         <List mt={"sm"} center spacing={"md"}>
-          {props.sets.map((set, idx) => {
+          {workout.sets.map((set, idx) => {
             return (
-              <List.Item
-                key={set.id}
-                icon={
-                  <ActionIcon
-                    variant={"light"}
-                    color={"red"}
-                    size={"sm"}
-                    onClick={() => void deleteSet(set.id)}
-                  >
-                    <IconX />
-                  </ActionIcon>
-                }
-              >
-                Set {idx}
-              </List.Item>
+              <SetRow
+                key={idx}
+                set={set}
+                index={idx}
+                pr={set.id == prSet?.id}
+                onDelete={async () => {
+                  await delSetMut.mutateAsync({
+                    setId: set.id,
+                  });
+                  await context.workout.getWorkouts.invalidate();
+                }}
+              />
             );
           })}
         </List>
@@ -96,17 +103,71 @@ export function WorkoutCard(props: WorkoutRecord) {
           mt="md"
           radius="md"
           onClick={toggle}
-          disabled={props.sets.length == 0}
+          disabled={workout.sets.length == 0}
+          leftSection={opened ? <IconZoomOut /> : <IconZoomIn />}
         >
-          {opened ? "Hide" : "Show"} Set Details
+          {isMobile ? null : opened ? "Hide" : "Show"} Sets
         </Button>
-        {session.data?.user?.id == props.userId && (
+        {session.data?.user?.id == workout.userId && (
           <>
-            <DeleteButton caption={"Delete Workout"} onClick={deleteWorkout} />
-            <AddSetButton />
+            <AddSetButton workoutId={workout.id} />
+            <DeleteButton
+              caption={isMobile ? "Delete" : "Delete Workout"}
+              onClick={deleteWorkout}
+            />
           </>
         )}
       </Group>
     </Card>
+  );
+}
+
+interface SetRowProps {
+  set: Set;
+  index: number;
+  pr: boolean;
+  onDelete: () => Promise<void>;
+}
+function SetRow({ set, onDelete, pr, index }: SetRowProps) {
+  const [opened, { open, close }] = useDisclosure(false);
+
+  return (
+    <>
+      <List.Item
+        key={set.id}
+        icon={
+          <ActionIcon
+            variant={"light"}
+            color={"red"}
+            size={"sm"}
+            onClick={open}
+          >
+            <IconX />
+          </ActionIcon>
+        }
+      >
+        Set {index + 1}: {set.reps} reps @ {set.weight} Kg{" "}
+        {pr && <Badge>PR</Badge>}
+      </List.Item>
+      <Modal opened={opened} onClose={close} title={"Confirmation"}>
+        <Text ta={"center"}>Are you sure you want to delete this Set?</Text>
+        <Text ta={"center"} c={"red"} fw={700}>
+          This action cannot be undone.
+        </Text>
+        <Group justify="center" mt={"md"}>
+          <Button color="blue" onClick={close}>
+            Cancel
+          </Button>
+          <Button
+            color="red"
+            onClick={() => {
+              onDelete().finally(close);
+            }}
+          >
+            Delete
+          </Button>
+        </Group>
+      </Modal>
+    </>
   );
 }

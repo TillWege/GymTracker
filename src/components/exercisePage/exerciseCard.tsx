@@ -1,4 +1,4 @@
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 import { api, type RouterOutputs } from "~/utils/api";
 import { Badge, Box, Button, Card, Flex, Group, Text } from "@mantine/core";
 import { useSession } from "next-auth/react";
@@ -15,11 +15,18 @@ import {
   GetMuscleGroupDisplayString,
 } from "~/common/muscleGroup";
 import { ConfigureExerciseModal } from "~/components/exercisePage/configureExerciseModal";
+import { useIsMobile } from "~/common/hooks";
+import {
+  IconGoGame,
+  IconPencil,
+  IconPlayerPlay,
+  IconTrash,
+} from "@tabler/icons-react";
 
 type ExerciseRecord = RouterOutputs["exercise"]["getExercises"][number];
 
 export function ExerciseCard(props: ExerciseRecord) {
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobile = useIsMobile();
   const [opened, { open, close }] = useDisclosure(false);
   const context = api.useContext();
 
@@ -88,7 +95,13 @@ export function ExerciseCard(props: ExerciseRecord) {
 
         <Flex justify={"space-between"} align={"end"}>
           <Group>
-            <Button variant="light" color="green" mt="md" radius="md">
+            <Button
+              variant="light"
+              color="green"
+              mt="md"
+              radius="md"
+              leftSection={<IconPlayerPlay />}
+            >
               Start
             </Button>
 
@@ -100,6 +113,7 @@ export function ExerciseCard(props: ExerciseRecord) {
                   mt="md"
                   radius="md"
                   onClick={open}
+                  leftSection={<IconPencil />}
                 >
                   Edit
                 </Button>
@@ -109,8 +123,9 @@ export function ExerciseCard(props: ExerciseRecord) {
                   mt="md"
                   radius="md"
                   onClick={() => void deleteFunc()}
+                  leftSection={<IconTrash />}
                 >
-                  Delete Exercise
+                  {isMobile ? "Delete" : "Delete Exercise"}
                 </Button>
               </>
             )}

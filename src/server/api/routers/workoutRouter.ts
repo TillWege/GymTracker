@@ -113,6 +113,31 @@ export const workoutRouter = createTRPCRouter({
   deleteSet: protectedProcedure
     .input(z.object({ setId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      return null;
+      return await ctx.prisma.set.delete({
+        where: {
+          id: input.setId,
+          workout: {
+            user: {
+              id: ctx.session.user.id,
+            },
+          },
+        },
+      });
+    }),
+  getPRSet: publicProcedure
+    .input(z.object({ exerciseId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.set.findFirst({
+        where: {
+          workout: {
+            exercise: {
+              id: input.exerciseId,
+            },
+          },
+        },
+        orderBy: {
+          weight: "desc",
+        },
+      });
     }),
 });

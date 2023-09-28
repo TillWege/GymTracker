@@ -11,17 +11,24 @@ import {
 } from "@mantine/core";
 import { IconPlus, IconX } from "@tabler/icons-react";
 import { api } from "~/utils/api";
+import { useIsMobile } from "~/common/hooks";
 
 interface SetProps {
   reps: number;
   weight: number;
 }
 
-export function AddSetButton() {
+interface AddSetButtonProps {
+  workoutId: string;
+}
+
+export function AddSetButton({ workoutId }: AddSetButtonProps) {
   const [opened, { close, open }] = useDisclosure(false);
   const [showErrors, setShowErrors] = useState(false);
   const [fieldProps, setFieldProps] = useState<SetProps[]>([]);
   const addSetMut = api.workout.addSet.useMutation();
+  const context = api.useContext();
+  const isMobile = useIsMobile();
 
   const addSet = () => {
     setFieldProps((prev) => [
@@ -39,6 +46,19 @@ export function AddSetButton() {
     open();
   };
 
+  const submit = async () => {
+    await addSetMut.mutateAsync({
+      workoutId: workoutId,
+      data: fieldProps.map((set) => ({
+        repCount: set.reps,
+        weight: set.weight,
+      })),
+    });
+    await context.workout.getWorkouts.invalidate();
+    await context.workout.getPRSet.invalidate();
+    close();
+  };
+
   return (
     <>
       <Button
@@ -47,8 +67,9 @@ export function AddSetButton() {
         mt="md"
         radius="md"
         onClick={onOpen}
+        leftSection={<IconPlus />}
       >
-        Add Sets
+        {isMobile ? "Add" : "Add Set"}
       </Button>
       <Modal opened={opened} onClose={close} title={"Add Set"}>
         {fieldProps.map((props, index) => {
@@ -90,7 +111,7 @@ export function AddSetButton() {
               ) {
                 setShowErrors(true);
               } else {
-                close();
+                void submit();
               }
             }}
           >

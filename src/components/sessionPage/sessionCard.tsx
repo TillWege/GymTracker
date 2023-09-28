@@ -2,10 +2,20 @@ import { type WorkoutSession } from ".prisma/client";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
 import { Badge, Box, Button, Card, Group, Text } from "@mantine/core";
+import { DeleteButton } from "~/components/DeleteButton";
+import { useIsMobile } from "~/common/hooks";
+import {
+  IconBusStop,
+  IconClockStop,
+  IconDetails,
+  IconInfoCircle,
+  IconPlayerStop,
+} from "@tabler/icons-react";
 
 export function SessionCard(props: WorkoutSession) {
   const endSessionMut = api.session.endSession.useMutation();
   const userSession = useSession();
+  const isMobile = useIsMobile();
 
   function GetDayCaption(date: Date) {
     const dayIndex = date.getDay();
@@ -92,20 +102,35 @@ export function SessionCard(props: WorkoutSession) {
       </Box>
 
       <Group>
-        <Button variant="light" color="blue" mt="md" radius="md">
+        <Button
+          variant="light"
+          color="blue"
+          mt="md"
+          radius="md"
+          leftSection={<IconInfoCircle />}
+        >
           Details
         </Button>
         {props.userId == userSession?.data?.user.id &&
           props.endTimestamp == undefined && (
-            <Button
-              variant="light"
-              color="red"
-              mt="md"
-              radius="md"
-              onClick={() => void endSession()}
-            >
-              End Session
-            </Button>
+            <>
+              <Button
+                variant="light"
+                color="yellow"
+                mt="md"
+                radius="md"
+                onClick={() => void endSession()}
+                leftSection={<IconClockStop />}
+              >
+                {isMobile ? "End" : "End Session"}
+              </Button>
+              <DeleteButton
+                caption={isMobile ? "Delete" : "Delete Session"}
+                onClick={() => {
+                  // TODO
+                }}
+              />
+            </>
           )}
       </Group>
     </Card>

@@ -10,10 +10,11 @@ import {
   IconWeight,
 } from "@tabler/icons-react";
 import { useRouter } from "next/router";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useIsMobile } from "~/common/hooks";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -21,7 +22,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const router = useRouter();
-  const isMobile = useMediaQuery("(max-width: 768px)") ?? false;
+  const isMobile = useIsMobile();
   const [expanded, { toggle }] = useDisclosure(!isMobile);
   const [selectedTab, setSelectedTab] = useState(
     router.pathname.split("/")[1] || "session"
