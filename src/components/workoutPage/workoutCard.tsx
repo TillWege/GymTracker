@@ -22,7 +22,7 @@ export function WorkoutCard(props: WorkoutRecord) {
   const [opened, { toggle }] = useDisclosure(false);
   const delWorkoutMut = api.workout.deleteWorkout.useMutation();
   const delSetMut = api.workout.deleteSet.useMutation();
-  const addSetMut = api.workout.addSet.useMutation();
+  
   const session = useSession();
 
   const context = api.useContext();

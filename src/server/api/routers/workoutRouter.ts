@@ -72,8 +72,12 @@ export const workoutRouter = createTRPCRouter({
     .input(
       z.object({
         workoutId: z.string(),
-        repCount: z.number(),
-        weight: z.number(),
+        data: z.array(
+          z.object({
+            weight: z.number(),
+            repCount: z.number(),
+          })
+        ),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -90,20 +94,21 @@ export const workoutRouter = createTRPCRouter({
         throw new Error("Workout not found");
       }
 
-      return await ctx.prisma.set.create({
-        data: {
-          weight: input.weight,
-          reps: input.repCount,
-          workout: {
-            connect: {
-              user: {
-                id: ctx.session.user.id,
+      return await Promise.all(
+        input.data.map(async (set) => {
+          return await ctx.prisma.set.create({
+            data: {
+              weight: set.weight,
+              reps: set.repCount,
+              workout: {
+                connect: {
+                  id: input.workoutId,
+                },
               },
-              id: input.workoutId,
             },
-          },
-        },
-      });
+          });
+        })
+      );
     }),
   deleteSet: protectedProcedure
     .input(z.object({ setId: z.string() }))

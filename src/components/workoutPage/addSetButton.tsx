@@ -1,6 +1,6 @@
 import { useDisclosure } from "@mantine/hooks";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   ActionIcon,
   Button,
@@ -10,6 +10,7 @@ import {
   NumberInput,
 } from "@mantine/core";
 import { IconPlus, IconX } from "@tabler/icons-react";
+import { api } from "~/utils/api";
 
 interface SetProps {
   reps: number;
@@ -20,6 +21,7 @@ export function AddSetButton() {
   const [opened, { close, open }] = useDisclosure(false);
   const [showErrors, setShowErrors] = useState(false);
   const [fieldProps, setFieldProps] = useState<SetProps[]>([]);
+  const addSetMut = api.workout.addSet.useMutation();
 
   const addSet = () => {
     setFieldProps((prev) => [
