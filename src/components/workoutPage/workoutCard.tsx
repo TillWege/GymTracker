@@ -74,7 +74,7 @@ export function WorkoutCard({ workout }: WorkoutCardProps) {
         </Text>
         <Text size="sm" c="dimmed">
           Total Weight:{" "}
-          {workout.sets.reduce((acc, set) => acc + set.reps * set.weight, 0)}
+          {workout.sets.reduce((acc, set) => acc + set.reps * set.weight, 0)}Kg
         </Text>
       </Box>
       <Collapse in={opened}>

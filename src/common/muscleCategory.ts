@@ -48,6 +48,8 @@ export function GetMuscleCategoryColor(type: MuscleCategory): MantineColor {
       return "yellow";
     case MuscleCategory.SHOULDERS:
       return "lime";
+    default:
+      return "gray";
   }
 }
 

@@ -71,7 +71,6 @@ export function Layout({ children }: LayoutProps) {
     });
   }
 
-  console.log(getCookieConsentValue("cookieBanner"));
   if (isClient && getCookieConsentValue("cookieBanner") == "true") {
     data.push({
       icon: sessionData.data?.user ? <IconLogout /> : <IconLogin />,

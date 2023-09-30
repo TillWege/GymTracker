@@ -10,6 +10,12 @@ export const dayRouter = createTRPCRouter({
     return ctx.prisma.gymDay.findMany({
       include: {
         user: true,
+        workout: {
+          include: {
+            exercise: true,
+            sets: true,
+          },
+        },
       },
     });
   }),
@@ -22,6 +28,12 @@ export const dayRouter = createTRPCRouter({
         },
         include: {
           user: true,
+          workout: {
+            include: {
+              exercise: true,
+              sets: true,
+            },
+          },
         },
       });
     }),
