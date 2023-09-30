@@ -1,8 +1,8 @@
 import { PageWithFab } from "~/components/pageWithFab";
 import { useDisclosure } from "@mantine/hooks";
 import { api, type RouterOutputs } from "~/utils/api";
-import { WorkoutCard } from "~/components/workoutPage/workoutCard";
 import { AddWorkoutModal } from "~/components/workoutPage/addWorkoutModal";
+import { BaseWorkoutCard } from "~/components/workoutPage/baseWorkoutCard";
 
 export type WorkoutRecord = RouterOutputs["workout"]["getWorkouts"][number];
 
@@ -18,7 +18,7 @@ export default function Workout() {
     >
       <AddWorkoutModal opened={opened} onClose={close} />
       {data?.map((workout) => {
-        return <WorkoutCard key={workout.id} workout={workout}></WorkoutCard>;
+        return <BaseWorkoutCard key={workout.id} workout={workout} />;
       })}
     </PageWithFab>
   );

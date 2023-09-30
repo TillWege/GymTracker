@@ -14,6 +14,7 @@ export const dayRouter = createTRPCRouter({
           include: {
             exercise: true,
             sets: true,
+            cardioData: true,
           },
         },
       },
@@ -32,6 +33,7 @@ export const dayRouter = createTRPCRouter({
             include: {
               exercise: true,
               sets: true,
+              cardioData: true,
             },
           },
         },

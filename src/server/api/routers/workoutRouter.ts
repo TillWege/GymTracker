@@ -13,6 +13,7 @@ export const workoutRouter = createTRPCRouter({
         exercise: true,
         day: true,
         sets: true,
+        cardioData: true,
       },
     });
   }),
@@ -150,6 +151,51 @@ export const workoutRouter = createTRPCRouter({
         },
         orderBy: {
           weight: "desc",
+        },
+      });
+    }),
+  addRound: protectedProcedure
+    .input(
+      z.object({
+        workoutId: z.string(),
+        data: z.array(
+          z.object({
+            distance: z.number(),
+            time: z.number(),
+            intensity: z.number(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await Promise.all(
+        input.data.map(async (round) => {
+          return ctx.prisma.cardioData.create({
+            data: {
+              distance: round.distance,
+              time: round.time,
+              intensity: round.intensity,
+              workout: {
+                connect: {
+                  id: input.workoutId,
+                },
+              },
+            },
+          });
+        })
+      );
+    }),
+  deleteRound: protectedProcedure
+    .input(z.object({ roundId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.cardioData.delete({
+        where: {
+          id: input.roundId,
+          workout: {
+            user: {
+              id: ctx.session.user.id,
+            },
+          },
         },
       });
     }),

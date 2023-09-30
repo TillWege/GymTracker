@@ -216,6 +216,8 @@ interface BottomProps {
 
 export function Bottom({ clearFunc }: BottomProps) {
   const path = useRouter().pathname.split("/")[1];
+  const isMobile = UseIsMobile();
+
   return (
     <Box
       h={30}
@@ -223,7 +225,7 @@ export function Bottom({ clearFunc }: BottomProps) {
       style={{
         display: "flex",
         justifyContent: "center",
-        gap: "50px",
+        gap: isMobile ? "10px" : "50px",
       }}
     >
       <Link

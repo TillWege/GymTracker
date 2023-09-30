@@ -26,7 +26,7 @@ interface WorkoutCardProps {
   workout: WorkoutRecord;
 }
 
-export function WorkoutCard({ workout }: WorkoutCardProps) {
+export function StrengthWorkoutCard({ workout }: WorkoutCardProps) {
   const [opened, { toggle }] = useDisclosure(false);
   const delWorkoutMut = api.workout.deleteWorkout.useMutation();
   const delSetMut = api.workout.deleteSet.useMutation();

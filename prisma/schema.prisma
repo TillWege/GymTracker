@@ -114,12 +114,22 @@ model Set {
 }
 
 model Workout {
-  id         String   @id @default(cuid())
-  day        GymDay   @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  id         String       @id @default(cuid())
+  day        GymDay       @relation(fields: [dayId], references: [id], onDelete: Cascade)
   dayId      String
-  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  exercise   Exercise     @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   exerciseId String
   sets       Set[]
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String
+  cardioData CardioData[]
+}
+
+model CardioData {
+  id        String  @id @default(cuid())
+  workout   Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  workoutId String
+  time      Int
+  intensity Int
+  distance  Int
 }
