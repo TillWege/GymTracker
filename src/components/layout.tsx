@@ -27,13 +27,19 @@ export function Layout({ children }: LayoutProps) {
   const isMobile = UseIsMobile();
   const [expanded, { toggle }] = useDisclosure(!isMobile);
   const [selectedTab, setSelectedTab] = useState(
-    router.pathname.split("/")[1] || "session"
+    router.pathname.split("/")[1] || "home"
   );
   const sessionData = useSession();
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    if (router.pathname.split("/")[1] != selectedTab) {
+      setSelectedTab(router.pathname.split("/")[1] || "home");
+    }
+  }, [router.pathname]);
 
   const getExpanded = () => {
     if (isMobile) return false;
