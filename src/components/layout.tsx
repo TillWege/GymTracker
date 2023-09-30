@@ -11,10 +11,12 @@ import {
 } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { useDisclosure } from "@mantine/hooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { UseIsMobile } from "~/common/hooks";
+import { CookieBanner } from "~/components/cookie";
+import { getCookieConsentValue } from "react-cookie-consent";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -28,13 +30,22 @@ export function Layout({ children }: LayoutProps) {
     router.pathname.split("/")[1] || "session"
   );
   const sessionData = useSession();
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const getExpanded = () => {
     if (isMobile) return false;
     return expanded;
   };
 
-  const data = [
+  const data: {
+    icon: React.ReactNode;
+    iconColor: string;
+    value: string;
+    onClick?: () => void;
+  }[] = [
     {
       icon: <IconBuildingEstate />,
       iconColor: "yellow",
@@ -50,12 +61,19 @@ export function Layout({ children }: LayoutProps) {
       iconColor: "green",
       value: "exercise",
     },
-    {
+  ];
+
+  if (sessionData.data?.user) {
+    data.push({
       icon: <IconUser />,
       iconColor: "red",
       value: "user",
-    },
-    {
+    });
+  }
+
+  console.log(getCookieConsentValue("cookieBanner"));
+  if (isClient && getCookieConsentValue("cookieBanner") == "true") {
+    data.push({
       icon: sessionData.data?.user ? <IconLogout /> : <IconLogin />,
       iconColor: "blue",
       value: sessionData.data?.user ? "logout" : "login",
@@ -66,8 +84,8 @@ export function Layout({ children }: LayoutProps) {
           void signIn();
         }
       },
-    },
-  ];
+    });
+  }
 
   if (!isMobile) {
     data.push({
@@ -93,6 +111,7 @@ export function Layout({ children }: LayoutProps) {
         backgroundColor: theme.colors.dark[8],
       })}
     >
+      <CookieBanner />
       <Header />
       <Tabs
         value={selectedTab}
@@ -208,6 +227,21 @@ export function Bottom({ clearFunc }: BottomProps) {
         gap: "50px",
       }}
     >
+      <Link
+        href={"https://github.com/TillWege/gymtracker"}
+        style={{ color: "inherit" }}
+        onClick={clearFunc}
+      >
+        <Text
+          style={{
+            textAlign: "center",
+          }}
+          fw={path == "code" ? 700 : undefined}
+        >
+          Code
+        </Text>
+      </Link>
+
       <Link href={"/about"} style={{ color: "inherit" }} onClick={clearFunc}>
         <Text
           style={{ textAlign: "center" }}
@@ -225,6 +259,16 @@ export function Bottom({ clearFunc }: BottomProps) {
           fw={path == "privacy" ? 700 : undefined}
         >
           Privacy
+        </Text>
+      </Link>
+      <Link href={"/cookies"} style={{ color: "inherit" }} onClick={clearFunc}>
+        <Text
+          style={{
+            textAlign: "center",
+          }}
+          fw={path == "cookies" ? 700 : undefined}
+        >
+          Cookies
         </Text>
       </Link>
     </Box>

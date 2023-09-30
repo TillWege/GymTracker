@@ -6,7 +6,7 @@ export default function Home() {
   const { data } = api.day.getDays.useQuery();
 
   return (
-    <PageWithFab pageTitle={"Overview"}>
+    <PageWithFab pageTitle={"All Gym Days"}>
       {data?.map((day) => {
         return <DayCard key={day.id} {...day} />;
       })}

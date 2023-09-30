@@ -1,9 +1,15 @@
 import { Badge, Box, Button, Card, Group, Text } from "@mantine/core";
-import { IconInfoCircle } from "@tabler/icons-react";
-import { type GymDay } from ".prisma/client";
-import { GetGymDayCaption } from "~/common/gymDay";
+import { IconInfoCircle, IconTrash } from "@tabler/icons-react";
 
-export function DayCard(props: GymDay) {
+import { GetGymDayCaption } from "~/common/gymDay";
+import { type RouterOutputs } from "~/utils/api";
+import { useSession } from "next-auth/react";
+
+type DayCardRecord = RouterOutputs["day"]["getDays"][number];
+
+export function DayCard(props: DayCardRecord) {
+  const session = useSession();
+
   return (
     <Card
       shadow="sm"
@@ -16,7 +22,7 @@ export function DayCard(props: GymDay) {
         flexDirection: "column",
       }}
     >
-      <Group mb="xs">
+      <Group>
         <Text fw={500}>{GetGymDayCaption(props)}</Text>
         <Badge
           color="pink"
@@ -26,20 +32,23 @@ export function DayCard(props: GymDay) {
           Chest - Day {/* TODO */}
         </Badge>
       </Group>
-
-      <Box style={{ flex: "auto" }}>
+      <Text>{props.user.name}</Text>
+      <Box style={{ flex: "auto" }} mt={"md"}>
         <Text size="sm" c="dimmed">
-          More Information
+          Total Exercises: {0 /* TODO */}
         </Text>
 
-        <Group justify="apart" mt="xs">
+        <Group justify="apart">
           <Text size="sm" c="dimmed">
-            Exercises: {0 /* TODO */}
+            Total Sets: {0 /* TODO */}
           </Text>
           <Text size="sm" c="dimmed">
-            Calories Burned: {0 /* TODO */}
+            Total Reps: {0 /* TODO */}
           </Text>
         </Group>
+        <Text size="sm" c="dimmed">
+          Total Weight: {0 /* TODO */}
+        </Text>
       </Box>
 
       <Group>
@@ -52,6 +61,18 @@ export function DayCard(props: GymDay) {
         >
           Details
         </Button>
+        {session?.data?.user?.id === props.user.id && (
+          <Button
+            variant="light"
+            color="red"
+            mt="md"
+            radius="md"
+            leftSection={<IconTrash />}
+            // TODO: onClick
+          >
+            Delete Data
+          </Button>
+        )}
       </Group>
     </Card>
   );
