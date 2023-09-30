@@ -17,8 +17,6 @@ import {
 import { ConfigureExerciseModal } from "~/components/exercisePage/configureExerciseModal";
 import { UseIsMobile } from "~/common/hooks";
 import { IconPencil, IconPlayerPlay, IconTrash } from "@tabler/icons-react";
-import { AddWorkoutModal } from "~/components/workoutPage/addWorkoutModal";
-import { userRouter } from "~/server/api/routers/userRouter";
 import { useRouter } from "next/router";
 
 type ExerciseRecord = RouterOutputs["exercise"]["getExercises"][number];

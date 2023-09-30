@@ -1,5 +1,5 @@
 import { Badge, Box, Button, Card, Collapse, Group, Text } from "@mantine/core";
-import { IconInfoCircle, IconTrash } from "@tabler/icons-react";
+import { IconInfoCircle } from "@tabler/icons-react";
 
 import { GetGymDayCaption } from "~/common/gymDay";
 import { api, type RouterOutputs } from "~/utils/api";
@@ -8,7 +8,7 @@ import {
   GetMuscleCategoryColor,
   GetMuscleCategoryValues,
 } from "~/common/muscleCategory";
-import { MuscleCategory } from "@prisma/client";
+import { type MuscleCategory } from "@prisma/client";
 import { useDisclosure } from "@mantine/hooks";
 import { DeleteButton } from "~/components/DeleteButton";
 

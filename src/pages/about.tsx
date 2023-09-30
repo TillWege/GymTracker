@@ -9,7 +9,7 @@ export default function About() {
       <Text>Email: tillwege@gmail</Text>
       <Text>Twitter / X: @tillwege</Text>
       <Title order={3}>Version</Title>
-      <Text>Version: Alpha 1</Text>
+      <Text>Version: 1.0.0</Text>
     </>
   );
 }
