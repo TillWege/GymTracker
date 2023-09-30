@@ -1,19 +1,24 @@
-import { Badge, Box, Button, Card, Group, Text } from "@mantine/core";
+import { Badge, Box, Button, Card, Collapse, Group, Text } from "@mantine/core";
 import { IconInfoCircle, IconTrash } from "@tabler/icons-react";
 
 import { GetGymDayCaption } from "~/common/gymDay";
-import { type RouterOutputs } from "~/utils/api";
+import { api, type RouterOutputs } from "~/utils/api";
 import { useSession } from "next-auth/react";
 import {
   GetMuscleCategoryColor,
   GetMuscleCategoryValues,
 } from "~/common/muscleCategory";
 import { MuscleCategory } from "@prisma/client";
+import { useDisclosure } from "@mantine/hooks";
+import { DeleteButton } from "~/components/DeleteButton";
 
 type DayCardRecord = RouterOutputs["day"]["getDays"][number];
 
 export function DayCard(props: DayCardRecord) {
   const session = useSession();
+  const [opened, { toggle }] = useDisclosure(false);
+  const deleteMut = api.day.deleteDay.useMutation();
+  const context = api.useContext();
 
   const getDayType = () => {
     const countMap = new Map<string, number>();
@@ -29,10 +34,12 @@ export function DayCard(props: DayCardRecord) {
     });
 
     const max = Math.max(...countMap.values());
-    const maxKey = [...countMap.entries()].find(
-      ([key, value]) => value === max
-    )?.[0];
-    return maxKey;
+    return [...countMap.entries()].find(([_, value]) => value === max)?.[0];
+  };
+
+  const deleteFunc = async () => {
+    await deleteMut.mutateAsync(props.id);
+    await context.day.getDays.invalidate();
   };
 
   return (
@@ -41,7 +48,6 @@ export function DayCard(props: DayCardRecord) {
       radius="md"
       withBorder
       mb={"md"}
-      h={250}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -86,6 +92,7 @@ export function DayCard(props: DayCardRecord) {
           Kg
         </Text>
       </Box>
+      <AdditionalDayCardInfo data={props} opened={opened} />
 
       <Group>
         <Button
@@ -94,22 +101,45 @@ export function DayCard(props: DayCardRecord) {
           mt="md"
           radius="md"
           leftSection={<IconInfoCircle />}
+          onClick={toggle}
         >
-          Details
+          {opened ? "Hide" : "Show"} Details
         </Button>
         {session?.data?.user?.id === props.user.id && (
-          <Button
-            variant="light"
-            color="red"
-            mt="md"
-            radius="md"
-            leftSection={<IconTrash />}
-            // TODO: onClick
-          >
-            Delete Data
-          </Button>
+          <DeleteButton caption={"Delete day"} onClick={deleteFunc} />
         )}
       </Group>
     </Card>
+  );
+}
+
+interface DayCardInfoProps {
+  data: DayCardRecord;
+  opened: boolean;
+}
+export function AdditionalDayCardInfo({ data, opened }: DayCardInfoProps) {
+  return (
+    <Collapse in={opened}>
+      {data.workout.map((workout) => {
+        return (
+          <Box
+            mt={"sm"}
+            key={workout.id}
+            style={(theme) => ({
+              borderTop: `1px solid ${theme.colors.gray[7]}`,
+            })}
+          >
+            <Text>{workout.exercise.name}</Text>
+            {workout.sets.map((set, idx) => {
+              return (
+                <Text key={set.id} size="sm" c="dimmed">
+                  Set {idx + 1}: {set.weight} Kg x {set.reps} Reps
+                </Text>
+              );
+            })}
+          </Box>
+        );
+      })}
+    </Collapse>
   );
 }

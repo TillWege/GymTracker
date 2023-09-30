@@ -37,4 +37,14 @@ export const dayRouter = createTRPCRouter({
         },
       });
     }),
+  deleteDay: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.gymDay.delete({
+        where: {
+          id: input,
+          userId: ctx.session.user.id,
+        },
+      });
+    }),
 });

@@ -17,6 +17,9 @@ import {
 import { ConfigureExerciseModal } from "~/components/exercisePage/configureExerciseModal";
 import { UseIsMobile } from "~/common/hooks";
 import { IconPencil, IconPlayerPlay, IconTrash } from "@tabler/icons-react";
+import { AddWorkoutModal } from "~/components/workoutPage/addWorkoutModal";
+import { userRouter } from "~/server/api/routers/userRouter";
+import { useRouter } from "next/router";
 
 type ExerciseRecord = RouterOutputs["exercise"]["getExercises"][number];
 
@@ -31,11 +34,21 @@ export function ExerciseCard(props: ExerciseRecord) {
     </Box>
   );
   const deleteMut = api.exercise.deleteExercise.useMutation();
+  const startMut = api.workout.addWorkout.useMutation();
   const session = useSession();
+  const router = useRouter();
 
   const deleteFunc = async () => {
     await deleteMut.mutateAsync(props.id);
     await context.exercise.getExercises.invalidate();
+  };
+
+  const startWorkout = async () => {
+    await startMut.mutateAsync({
+      exerciseId: props.id,
+    });
+    await context.workout.getWorkouts.invalidate();
+    await router.push("/workout");
   };
 
   return (
@@ -96,6 +109,9 @@ export function ExerciseCard(props: ExerciseRecord) {
               mt="md"
               radius="md"
               leftSection={<IconPlayerPlay />}
+              onClick={() => {
+                void startWorkout();
+              }}
             >
               Start
             </Button>

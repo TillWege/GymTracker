@@ -21,6 +21,7 @@ import { type Set } from "@prisma/client";
 import { type WorkoutRecord } from "~/pages/workout";
 import { UseIsMobile } from "~/common/hooks";
 import { GetGymDayCaption } from "~/common/gymDay";
+import { AddWorkoutModal } from "~/components/workoutPage/addWorkoutModal";
 
 interface WorkoutCardProps {
   workout: WorkoutRecord;
