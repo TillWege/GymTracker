@@ -15,18 +15,13 @@ import {
   GetMuscleGroupDisplayString,
 } from "~/common/muscleGroup";
 import { ConfigureExerciseModal } from "~/components/exercisePage/configureExerciseModal";
-import { useIsMobile } from "~/common/hooks";
-import {
-  IconGoGame,
-  IconPencil,
-  IconPlayerPlay,
-  IconTrash,
-} from "@tabler/icons-react";
+import { UseIsMobile } from "~/common/hooks";
+import { IconPencil, IconPlayerPlay, IconTrash } from "@tabler/icons-react";
 
 type ExerciseRecord = RouterOutputs["exercise"]["getExercises"][number];
 
 export function ExerciseCard(props: ExerciseRecord) {
-  const isMobile = useIsMobile();
+  const isMobile = UseIsMobile();
   const [opened, { open, close }] = useDisclosure(false);
   const context = api.useContext();
 

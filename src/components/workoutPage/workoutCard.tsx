@@ -1,5 +1,5 @@
 import { useDisclosure } from "@mantine/hooks";
-import { api, type RouterOutputs } from "~/utils/api";
+import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
 import {
   ActionIcon,
@@ -17,9 +17,10 @@ import { IconX, IconZoomIn, IconZoomOut } from "@tabler/icons-react";
 import { DeleteButton } from "~/components/DeleteButton";
 import { AddSetButton } from "~/components/workoutPage/addSetButton";
 import { type Set } from "@prisma/client";
-import { GetSessionCaption } from "~/common/gymsession";
-import { WorkoutRecord } from "~/pages/workout";
-import { useIsMobile } from "~/common/hooks";
+
+import { type WorkoutRecord } from "~/pages/workout";
+import { UseIsMobile } from "~/common/hooks";
+import { GetGymDayCaption } from "~/common/gymDay";
 
 interface WorkoutCardProps {
   workout: WorkoutRecord;
@@ -31,7 +32,7 @@ export function WorkoutCard({ workout }: WorkoutCardProps) {
   const delSetMut = api.workout.deleteSet.useMutation();
   const session = useSession();
   const context = api.useContext();
-  const isMobile = useIsMobile();
+  const isMobile = UseIsMobile();
   const { data: prSet } = api.workout.getPRSet.useQuery({
     exerciseId: workout.exerciseId,
   });
@@ -64,7 +65,7 @@ export function WorkoutCard({ workout }: WorkoutCardProps) {
             <Badge style={{ marginLeft: "auto", marginRight: 0 }}>New PR</Badge>
           )}
         </Group>
-        <Text>{GetSessionCaption(workout.session)}</Text>
+        <Text>{GetGymDayCaption(workout.day)}</Text>
         <Text size="sm" c="dimmed">
           Sets: {workout.sets.length}
         </Text>

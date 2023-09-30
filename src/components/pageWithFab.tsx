@@ -4,8 +4,8 @@ import { useSession } from "next-auth/react";
 interface PageWithFabProps {
   pageTitle: string;
   titleChildren?: React.ReactNode;
-  onFabClick: () => void;
-  fabCaption: string;
+  onFabClick?: () => void;
+  fabCaption?: string;
   children: React.ReactNode;
 }
 
@@ -27,7 +27,7 @@ export function PageWithFab({
 
       <Divider mt={"md"} mb={"md"} />
 
-      {data?.user && (
+      {data?.user && onFabClick && (
         <Button
           onClick={onFabClick}
           style={{

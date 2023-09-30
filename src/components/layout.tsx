@@ -14,7 +14,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useIsMobile } from "~/common/hooks";
+import { UseIsMobile } from "~/common/hooks";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -22,7 +22,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const router = useRouter();
-  const isMobile = useIsMobile();
+  const isMobile = UseIsMobile();
   const [expanded, { toggle }] = useDisclosure(!isMobile);
   const [selectedTab, setSelectedTab] = useState(
     router.pathname.split("/")[1] || "session"
@@ -38,7 +38,7 @@ export function Layout({ children }: LayoutProps) {
     {
       icon: <IconBuildingEstate />,
       iconColor: "yellow",
-      value: "session",
+      value: "home",
     },
     {
       icon: <IconWeight />,
@@ -97,7 +97,7 @@ export function Layout({ children }: LayoutProps) {
       <Tabs
         value={selectedTab}
         variant="outline"
-        defaultValue="session"
+        defaultValue="home"
         maw={800}
         w={"95%"}
         style={

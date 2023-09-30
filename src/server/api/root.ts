@@ -1,10 +1,10 @@
 import { createTRPCRouter } from "~/server/api/trpc";
-import { sessionRouter } from "~/server/api/routers/sessionRouter";
+import { dayRouter } from "~/server/api/routers/dayRouter";
 import { exerciseRouter } from "~/server/api/routers/exerciseRouter";
 import { workoutRouter } from "~/server/api/routers/workoutRouter";
 
 export const appRouter = createTRPCRouter({
-  session: sessionRouter,
+  day: dayRouter,
   exercise: exerciseRouter,
   workout: workoutRouter,
 });

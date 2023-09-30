@@ -1,6 +1,6 @@
 import { PageWithFab } from "~/components/pageWithFab";
 import { useDisclosure } from "@mantine/hooks";
-import { api, RouterOutputs } from "~/utils/api";
+import { api, type RouterOutputs } from "~/utils/api";
 import { WorkoutCard } from "~/components/workoutPage/workoutCard";
 import { AddWorkoutModal } from "~/components/workoutPage/addWorkoutModal";
 

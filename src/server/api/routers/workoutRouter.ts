@@ -4,13 +4,14 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod";
+import { GetDayLimits } from "~/common/gymDay";
 
 export const workoutRouter = createTRPCRouter({
   getWorkouts: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.workout.findMany({
       include: {
         exercise: true,
-        session: true,
+        day: true,
         sets: true,
       },
     });
@@ -19,28 +20,40 @@ export const workoutRouter = createTRPCRouter({
     .input(
       z.object({
         exerciseId: z.string(),
-        sessionId: z.optional(z.string()),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const createInfo = {
-        user: {
-          connect: {
-            id: ctx.session.user.id,
+      const [dayStartDate, dayEndDate] = GetDayLimits(new Date());
+
+      let gymDay = await ctx.prisma.gymDay.findFirst({
+        where: {
+          userId: ctx.session.user.id,
+          date: {
+            gte: dayStartDate,
+            lt: dayEndDate,
           },
         },
-        startTimestamp: new Date(),
-      };
+      });
 
-      const connectInfo = {
-        id: input.sessionId,
-      };
+      if (!gymDay) {
+        gymDay = await ctx.prisma.gymDay.create({
+          data: {
+            user: {
+              connect: {
+                id: ctx.session.user.id,
+              },
+            },
+            date: new Date(),
+          },
+        });
+      }
 
       return await ctx.prisma.workout.create({
         data: {
-          session: {
-            create: input.sessionId ? undefined : createInfo,
-            connect: input.sessionId ? connectInfo : undefined,
+          day: {
+            connect: {
+              id: gymDay.id,
+            },
           },
           exercise: {
             connect: {

@@ -5,7 +5,7 @@ export default function Home() {
   const router = useRouter();
 
   if (typeof window !== "undefined") {
-    void router.push("/session");
+    void router.push("/home");
   }
 
   return <Loader />;

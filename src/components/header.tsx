@@ -1,9 +1,9 @@
 import { Flex, Title } from "@mantine/core";
 import Image from "next/image";
-import { useIsMobile } from "~/common/hooks";
+import { UseIsMobile } from "~/common/hooks";
 
 export function Header() {
-  const isMobile = useIsMobile();
+  const isMobile = UseIsMobile();
   return (
     <Flex w={"100%"} justify={"center"} align={"center"} gap={"xl"}>
       <Image

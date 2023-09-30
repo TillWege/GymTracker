@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import { IconPlus, IconX } from "@tabler/icons-react";
 import { api } from "~/utils/api";
-import { useIsMobile } from "~/common/hooks";
+import { UseIsMobile } from "~/common/hooks";
 
 interface SetProps {
   reps: number;
@@ -28,7 +28,7 @@ export function AddSetButton({ workoutId }: AddSetButtonProps) {
   const [fieldProps, setFieldProps] = useState<SetProps[]>([]);
   const addSetMut = api.workout.addSet.useMutation();
   const context = api.useContext();
-  const isMobile = useIsMobile();
+  const isMobile = UseIsMobile();
 
   const addSet = () => {
     setFieldProps((prev) => [
