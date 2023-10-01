@@ -43,10 +43,26 @@ export function GetMuscleGroupSelection(): {
   value: MuscleGroup | "";
   label: string;
 }[] {
-  return values.map((value) => ({
-    value,
-    label: GetMuscleGroupDisplayString(value),
-  }));
+  return [
+    { value: "", label: "Please Select..." },
+    ...values.map((value) => ({
+      value,
+      label: GetMuscleGroupDisplayString(value),
+    })),
+  ];
+}
+
+export function GetFilteredMuscleGroupSelection(category: MuscleCategory): {
+  value: MuscleGroup | "";
+  label: string;
+}[] {
+  return GetMuscleGroupSelection().filter((group) => {
+    if (group.value === "") {
+      return true;
+    } else {
+      return GetCategoryFromGroup(group.value) === category;
+    }
+  });
 }
 
 export function GetCategoryFromGroup(group: MuscleGroup): MuscleCategory {

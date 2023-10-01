@@ -39,14 +39,15 @@ export function AddWorkoutModal({ opened, onClose }: AddWorkoutModalProps) {
     onClose();
   };
 
-  const exerciseOptions: ComboboxItem[] =
-    exercises?.map((exercise) => {
+  const exerciseOptions: ComboboxItem[] = [
+    { value: "", label: "Select Exercise" },
+    ...(exercises?.map((exercise) => {
       return {
         label: exercise.name,
         value: exercise.id,
       };
-    }) ?? [];
-
+    }) ?? []),
+  ];
   return (
     <Modal opened={opened} onClose={onClose} title={"Start new Workout"}>
       <form

@@ -9,7 +9,10 @@ import {
   GetMuscleCategorySelection,
   IsMuscleCategory,
 } from "~/common/muscleCategory";
-import { GetMuscleGroupSelection, IsMuscleGroup } from "~/common/muscleGroup";
+import {
+  GetFilteredMuscleGroupSelection,
+  IsMuscleGroup,
+} from "~/common/muscleGroup";
 import { Button, Group, Modal, NativeSelect, TextInput } from "@mantine/core";
 import {
   type ExerciseType,
@@ -120,9 +123,14 @@ export function ConfigureExerciseModal({
           withAsterisk
         />
         <NativeSelect
-          data={GetMuscleGroupSelection()}
+          data={
+            form.values.muscleCategory == ""
+              ? []
+              : GetFilteredMuscleGroupSelection(form.values.muscleCategory)
+          }
           label={"Select Muscle Group"}
           placeholder={"Muscle Group"}
+          disabled={form.values.muscleCategory == ""}
           {...form.getInputProps("muscleGroup")}
         />
         <NativeSelect

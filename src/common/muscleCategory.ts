@@ -28,10 +28,13 @@ export function GetMuscleCategorySelection(): {
   value: MuscleCategory | "";
   label: string;
 }[] {
-  return values.map((value) => ({
-    value,
-    label: GetMuscleCategoryDisplayString(value),
-  }));
+  return [
+    { value: "", label: "Select Muscle Category..." },
+    ...values.map((value) => ({
+      value,
+      label: GetMuscleCategoryDisplayString(value),
+    })),
+  ];
 }
 
 export function GetMuscleCategoryColor(type: MuscleCategory): MantineColor {
