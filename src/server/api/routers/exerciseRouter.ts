@@ -46,6 +46,9 @@ export const exerciseRouter = createTRPCRouter({
             },
           },
         },
+        orderBy: {
+          createdAt: "desc",
+        },
       });
     }),
   addExercise: protectedProcedure

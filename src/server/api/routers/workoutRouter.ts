@@ -15,6 +15,11 @@ export const workoutRouter = createTRPCRouter({
         sets: true,
         cardioData: true,
       },
+      orderBy: {
+        day: {
+          date: "desc",
+        },
+      },
     });
   }),
   addWorkout: protectedProcedure

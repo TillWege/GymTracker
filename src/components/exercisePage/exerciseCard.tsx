@@ -55,7 +55,7 @@ export function ExerciseCard(props: ExerciseRecord) {
       radius="md"
       withBorder
       mb={"md"}
-      h={250}
+      h={150}
       style={{
         display: "flex",
         flexDirection: "column",

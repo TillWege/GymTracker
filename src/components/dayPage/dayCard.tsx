@@ -20,6 +20,7 @@ import {
 import { ExerciseType, type MuscleCategory } from "@prisma/client";
 import { useDisclosure } from "@mantine/hooks";
 import { DeleteButton } from "~/components/DeleteButton";
+import Link from "next/link";
 
 type DayCardRecord = RouterOutputs["day"]["getDays"][number];
 
@@ -72,7 +73,18 @@ export function DayCard(props: DayCardRecord) {
           {getDayType()} - Day
         </Badge>
       </Group>
-      <Text>{props.user.name}</Text>
+      <Link
+        href={{
+          pathname: "/user/",
+          query: { id: props.user.id },
+        }}
+        style={{
+          textDecoration: "none",
+          color: "inherit",
+        }}
+      >
+        <Text td={"underline"}>{props.user.name}</Text>{" "}
+      </Link>
       <Box style={{ flex: "auto" }} mt={"md"}>
         <Text size="sm" c="dimmed">
           Total Exercises: {props.workout.length}

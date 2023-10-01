@@ -18,6 +18,9 @@ export const dayRouter = createTRPCRouter({
           },
         },
       },
+      orderBy: {
+        date: "desc",
+      },
     });
   }),
   getDaysByUser: protectedProcedure
@@ -36,6 +39,9 @@ export const dayRouter = createTRPCRouter({
               cardioData: true,
             },
           },
+        },
+        orderBy: {
+          date: "desc",
         },
       });
     }),

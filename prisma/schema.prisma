@@ -103,6 +103,7 @@ model Exercise {
   workouts       Workout[]
   creator        User           @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId      String
+  createdAt      DateTime       @default(now())
 }
 
 model Set {
