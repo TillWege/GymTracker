@@ -6,6 +6,7 @@ import { BaseWorkoutCard } from "~/components/workoutPage/baseWorkoutCard";
 import { Button, Center, Checkbox } from "@mantine/core";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export type WorkoutRecord =
   RouterOutputs["workout"]["getWorkouts"]["data"][number];
@@ -14,10 +15,14 @@ export default function Workout() {
   const [opened, { open, close }] = useDisclosure(false);
   const [onlyMine, setOnlyMine] = useState(false);
   const session = useSession();
+  const router = useRouter();
+  const { exerciseId } = router.query;
+
   const { data, fetchNextPage, hasNextPage } =
     api.workout.getWorkouts.useInfiniteQuery(
       {
         onlyMine,
+        exerciseId: exerciseId ? (exerciseId as string) : undefined,
       },
       {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -28,7 +33,7 @@ export default function Workout() {
     <PageWithFab
       onFabClick={open}
       fabCaption={"Start Workout"}
-      pageTitle={"Workout list"}
+      pageTitle={`Workout List${exerciseId ? " (Filtered)" : ""}`}
       titleChildren={
         <Checkbox
           label="Only show Mine"

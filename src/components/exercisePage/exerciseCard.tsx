@@ -18,6 +18,7 @@ import { ConfigureExerciseModal } from "~/components/exercisePage/configureExerc
 import { UseIsMobile } from "~/common/hooks";
 import { IconPencil, IconPlayerPlay, IconTrash } from "@tabler/icons-react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 type ExerciseRecord = RouterOutputs["exercise"]["getExercises"][number];
 
@@ -28,6 +29,21 @@ export function ExerciseCard(props: ExerciseRecord) {
 
   const totalCount = (
     <Box style={{ marginLeft: "auto", marginRight: 0 }} c="dimmed">
+      <Link
+        style={{
+          textDecoration: "underline",
+          color: "inherit",
+        }}
+        href={{
+          pathname: "/workout",
+          query: {
+            exerciseId: props.id,
+          },
+        }}
+      >
+        Open Workouts
+      </Link>
+      <br />
       Total Workouts: {props._count.workouts}
     </Box>
   );
@@ -55,7 +71,7 @@ export function ExerciseCard(props: ExerciseRecord) {
       radius="md"
       withBorder
       mb={"md"}
-      h={150}
+      h={200}
       style={{
         display: "flex",
         flexDirection: "column",
