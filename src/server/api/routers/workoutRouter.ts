@@ -13,10 +13,11 @@ export const workoutRouter = createTRPCRouter({
         cursor: z.string().nullish(),
         onlyMine: z.boolean(),
         exerciseId: z.optional(z.string()),
+        disableLimit: z.optional(z.boolean()),
       })
     )
     .query(async ({ ctx, input }) => {
-      const limit = 10;
+      const limit = input.disableLimit ? 1_000_000 : 10;
       const data = await ctx.prisma.workout.findMany({
         where: {
           exerciseId: input.exerciseId,
@@ -227,6 +228,30 @@ export const workoutRouter = createTRPCRouter({
               id: ctx.session.user.id,
             },
           },
+        },
+      });
+    }),
+  getDataForHistory: publicProcedure
+    .input(
+      z.object({
+        exerciseId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.workout.findMany({
+        where: {
+          exercise: {
+            id: input.exerciseId,
+          },
+          user: {
+            id: ctx.session?.user.id,
+          },
+        },
+        include: {
+          day: true,
+          sets: true,
+          cardioData: true,
+          exercise: true,
         },
       });
     }),

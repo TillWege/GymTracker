@@ -3,6 +3,7 @@ import { Box, Flex, ScrollArea, Tabs, Text, ThemeIcon } from "@mantine/core";
 import {
   IconBarbell,
   IconBuildingEstate,
+  IconHistory,
   IconLayoutNavbarExpand,
   IconLogin,
   IconLogout,
@@ -74,6 +75,11 @@ export function Layout({ children }: LayoutProps) {
       icon: <IconUser />,
       iconColor: "red",
       value: "user",
+    });
+    data.push({
+      icon: <IconHistory />,
+      iconColor: "orange",
+      value: "history",
     });
   }
 
