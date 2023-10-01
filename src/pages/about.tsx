@@ -6,10 +6,10 @@ export default function About() {
       <Title order={2}>GymTracker</Title>
       <Text>Made by: TillWege</Text>
       <Title order={3}>Contact</Title>
-      <Text>Email: tillwege@gmail</Text>
+      <Text>Email: tillwege@gmail.com</Text>
       <Text>Twitter / X: @tillwege</Text>
       <Title order={3}>Version</Title>
-      <Text>Version: 1.3.0</Text>
+      <Text>Version: 1.3.1</Text>
     </>
   );
 }
