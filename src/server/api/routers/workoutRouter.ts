@@ -8,11 +8,18 @@ import { GetDayLimits } from "~/common/gymDay";
 
 export const workoutRouter = createTRPCRouter({
   getWorkouts: publicProcedure
-    .input(z.object({ cursor: z.string().nullish(), onlyMine: z.boolean() }))
+    .input(
+      z.object({
+        cursor: z.string().nullish(),
+        onlyMine: z.boolean(),
+        exerciseId: z.optional(z.string()),
+      })
+    )
     .query(async ({ ctx, input }) => {
       const limit = 10;
       const data = await ctx.prisma.workout.findMany({
         where: {
+          exerciseId: input.exerciseId,
           user: {
             id: input.onlyMine ? ctx.session?.user.id : undefined,
           },
