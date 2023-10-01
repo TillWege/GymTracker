@@ -22,7 +22,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { DeleteButton } from "~/components/DeleteButton";
 import Link from "next/link";
 
-type DayCardRecord = RouterOutputs["day"]["getDays"][number];
+type DayCardRecord = RouterOutputs["day"]["getDays"]["data"][0];
 
 export function DayCard(props: DayCardRecord) {
   const session = useSession();
