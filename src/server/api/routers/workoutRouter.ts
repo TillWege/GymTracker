@@ -7,21 +7,40 @@ import { z } from "zod";
 import { GetDayLimits } from "~/common/gymDay";
 
 export const workoutRouter = createTRPCRouter({
-  getWorkouts: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.workout.findMany({
-      include: {
-        exercise: true,
-        day: true,
-        sets: true,
-        cardioData: true,
-      },
-      orderBy: {
-        day: {
-          date: "desc",
+  getWorkouts: publicProcedure
+    .input(z.object({ cursor: z.string().nullish(), onlyMine: z.boolean() }))
+    .query(async ({ ctx, input }) => {
+      const limit = 10;
+      const data = await ctx.prisma.workout.findMany({
+        where: {
+          user: {
+            id: input.onlyMine ? ctx.session?.user.id : undefined,
+          },
         },
-      },
-    });
-  }),
+        include: {
+          exercise: true,
+          day: true,
+          sets: true,
+          cardioData: true,
+        },
+        orderBy: {
+          day: {
+            date: "desc",
+          },
+        },
+        cursor: input.cursor ? { id: input.cursor } : undefined,
+        take: limit + 1,
+      });
+      let nextCursor: typeof input.cursor | undefined = undefined;
+      if (data.length > limit) {
+        const nextItem = data.pop();
+        nextCursor = nextItem!.id;
+      }
+      return {
+        data,
+        nextCursor,
+      };
+    }),
   addWorkout: protectedProcedure
     .input(
       z.object({
