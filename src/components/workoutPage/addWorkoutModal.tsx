@@ -3,7 +3,7 @@ import { api } from "~/utils/api";
 import { useEffect } from "react";
 
 import { type ComboboxItem } from "@mantine/core/lib/components/Combobox/Combobox.types";
-import { Button, Group, Modal, Select } from "@mantine/core";
+import { Button, Group, Modal, NativeSelect } from "@mantine/core";
 
 interface AddWorkoutForm {
   exercise: string;
@@ -54,7 +54,7 @@ export function AddWorkoutModal({ opened, onClose }: AddWorkoutModalProps) {
           void addWorkout(values);
         })}
       >
-        <Select
+        <NativeSelect
           label={"Select Exercise"}
           placeholder={"Exercise"}
           data={exerciseOptions}
